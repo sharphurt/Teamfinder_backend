@@ -1,37 +1,33 @@
 package ru.catstack.auth.security;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.model.User;
-import ru.catstack.auth.security.jwt.JwtUser;
+import ru.catstack.auth.repository.UserRepository;
 import ru.catstack.auth.security.jwt.JwtUserFactory;
 import ru.catstack.auth.service.UserService;
 
+import java.util.Optional;
+import java.util.logging.Logger;
+
 @Service
-@Slf4j
 public class JwtUserDetailsService implements UserDetailsService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
+    private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    @Autowired
-    public JwtUserDetailsService(UserService userService) {
-        this.userService = userService;
+    public JwtUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.findByUsername(username);
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User with username: " + username + " not found");
-        }
-
-        JwtUser jwtUser = JwtUserFactory.create(user);
-        log.info("IN loadUserByUsername - user with username: {} successfully loaded", username);
-        return jwtUser;
+        Optional<User> dbUser = userRepository.findByUsername(username);
+        logger.info("Fetched user : " + dbUser + " by " + username);
+        return dbUser.map(JwtUserFactory::create)
+                .orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching user name in the database for " + username));
     }
 }

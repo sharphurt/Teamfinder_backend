@@ -10,8 +10,6 @@ import ru.catstack.auth.model.User;
 public class AdminUserDto {
     private Long id;
     private String username;
-    private String firstName;
-    private String lastName;
     private String email;
     private String status;
 
@@ -35,16 +33,8 @@ public class AdminUserDto {
         this.email = email;
     }
 
-    public void setStatus(String status) {
+    private void setStatus(String status) {
         this.status = status;
-    }
-
-    public User toUser() {
-        User user = new User();
-        user.setId(id);
-        user.setUsername(username);user.setEmail(email);
-        user.setStatus(Status.valueOf(status));
-        return user;
     }
 
     public static AdminUserDto fromUser(User user) {

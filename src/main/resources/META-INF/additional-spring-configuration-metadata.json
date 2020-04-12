@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "app.jwt.secret",
+      "type": "java.lang.String",
+      "description": "Description for app.jwt.secret."
+    },
+    {
+      "name": "jpa",
+      "type": "java.lang.String",
+      "description": "Description for jpa."
+    },
+    {
+      "name": "app.jwt.header",
+      "type": "java.lang.String",
+      "description": "Description for app.jwt.header."
+    }
+  ]
+}

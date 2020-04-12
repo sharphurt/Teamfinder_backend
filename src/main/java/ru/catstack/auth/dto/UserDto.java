@@ -9,7 +9,7 @@ import ru.catstack.auth.model.User;
 public class UserDto {
     private Long id;
     private String username;
-    private String firstName;
+    private String email;
 
     public Long getId() {
         return id;
@@ -29,18 +29,6 @@ public class UserDto {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    private String lastName;
-    private String email;
-
-    public User toUser(){
-        User user = new User();
-        user.setId(id);
-        user.setUsername(username);
-        user.setEmail(email);
-
-        return user;
     }
 
     public static UserDto fromUser(User user) {

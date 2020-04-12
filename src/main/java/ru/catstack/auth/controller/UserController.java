@@ -11,6 +11,8 @@ import ru.catstack.auth.dto.UserDto;
 import ru.catstack.auth.model.User;
 import ru.catstack.auth.service.UserService;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping(value = "/api/users/")
 public class UserController {
@@ -23,13 +25,13 @@ public class UserController {
 
     @GetMapping(value = "{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable(name = "id") Long id){
-        User user = userService.findById(id);
+        Optional user = userService.findById(id);
 
-        if(user == null){
+        if(user.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        UserDto result = UserDto.fromUser(user);
+        UserDto result = UserDto.fromUser((User) user.get());
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

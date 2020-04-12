@@ -1,27 +1,45 @@
 package ru.catstack.auth.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-
+import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-@Data
-public class Role extends BaseEntity {
+public class Role {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "name")
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @NaturalId
+    private RoleEnum role = RoleEnum.ROLE_USER;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    private List<User> users;
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<User> users;
 
-    @Override
-    public String toString() {
-        return "Role{" +
-                "id: " + super.getId() + ", " +
-                "name: " + name + "}";
+    public Role(RoleEnum role) {
+        this.role = role;
+    }
+
+    public Role() {    }
+
+    public boolean isAdminRole() {
+        return this.role.equals(RoleEnum.ROLE_ADMIN);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public RoleEnum getRole() {
+        return role;
     }
 }
