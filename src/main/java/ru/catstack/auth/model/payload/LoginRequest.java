@@ -14,7 +14,6 @@ public class LoginRequest {
     @ApiModelProperty(value = "Registered username", allowableValues = "NonEmpty String")
     private String username;
 
-    @NotBlank(message = "Login Email can be null but not blank")
     @ApiModelProperty(value = "User registered email", required = true, allowableValues = "NonEmpty String")
     private String email;
 
