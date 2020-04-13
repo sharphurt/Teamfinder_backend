@@ -1,17 +1,19 @@
 package ru.catstack.auth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.model.Role;
-import ru.catstack.auth.model.RoleEnum;
 import ru.catstack.auth.model.Status;
 import ru.catstack.auth.model.User;
 import ru.catstack.auth.model.payload.RegistrationRequest;
+import ru.catstack.auth.repository.UserProfileDataRepository;
 import ru.catstack.auth.repository.UserRepository;
+import ru.catstack.auth.security.jwt.JwtTokenProvider;
 
-import java.util.Date;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import java.net.http.HttpRequest;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -22,13 +24,17 @@ public class UserService {
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserProfileDataRepository userProfileDataRepository;
     private final RefreshTokenService refreshTokenService;
     private final RoleService roleService;
 
     @Autowired
-    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RefreshTokenService refreshTokenService, RoleService roleService) {
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, JwtTokenProvider jwtTokenProvider, UserProfileDataRepository userProfileDataRepository, RefreshTokenService refreshTokenService, RoleService roleService) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userProfileDataRepository = userProfileDataRepository;
         this.refreshTokenService = refreshTokenService;
         this.roleService = roleService;
     }
@@ -58,11 +64,15 @@ public class UserService {
     }
 
     User createUser(RegistrationRequest registerRequest) {
-        User newUser = new User(registerRequest.getEmail(), passwordEncoder.encode(registerRequest.getPassword()),
+        return new User(registerRequest.getEmail(), passwordEncoder.encode(registerRequest.getPassword()),
                 registerRequest.getUsername(), registerRequest.getFirstName(), registerRequest.getLastName(),
                 registerRequest.getAge(), Set.of(new Role()), Status.ACTIVE
         );
-        return newUser;
+    }
+
+    public Long getUserIdFromRequest(HttpServletRequest request) {
+        Optional<String> token = Optional.of(jwtTokenProvider.resolveToken(request));
+        return token.map(jwtTokenProvider::getUserId).orElseThrow(() -> new AccessDeniedException("Access denied"));
     }
 
 //    public void logoutUser(@CurrentUser CustomUserDetails currentUser, LogOutRequest logOutRequest) {

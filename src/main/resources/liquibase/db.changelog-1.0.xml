@@ -145,25 +145,17 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="1.0.6" author="sharphurt">
-        <createTable tableName="users_devices">
+    <changeSet id="1.0.7" author="sharphurt">
+        <createTable tableName="user_profile_data">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false" unique="false"/>
             </column>
 
-            <column name="device_id" type="BIGINT">
-                <constraints nullable="false" unique="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="1.0.7" author="sharphurt">
-        <createTable tableName="sessions_tokens">
-            <column name="device_id" type="BIGINT">
-                <constraints nullable="false" unique="false"/>
-            </column>
-
-            <column name="token_id" type="BIGINT">
+            <column name="about_me" type="VARCHAR(500)">
                 <constraints nullable="false" unique="false"/>
             </column>
         </createTable>

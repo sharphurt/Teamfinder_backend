@@ -1,6 +1,7 @@
 package ru.catstack.auth.security.jwt;
 
 import io.jsonwebtoken.*;
+import org.apache.el.stream.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.PropertyKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,11 +55,11 @@ public class JwtTokenProvider {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    public String createToken(@NotNull User customUserDetails) {
+    public String createToken(@NotNull User user) {
         Instant expiryDate = Instant.now().plusMillis(validityInMilliseconds);
         return Jwts.builder()
-                .setId(Long.toString(customUserDetails.getId()))
-                .setSubject(customUserDetails.getUsername())
+                .setId(Long.toString(user.getId()))
+                .setSubject(user.getUsername())
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .signWith(SignatureAlgorithm.HS512, secret)
@@ -74,7 +75,11 @@ public class JwtTokenProvider {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
 
-    String resolveToken(@NotNull HttpServletRequest req) {
+    public Long getUserId(String token) {
+        return Long.parseLong(Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getId());
+    }
+
+    public String resolveToken(@NotNull HttpServletRequest req) {
         String bearerToken = req.getHeader(tokenHeader);
         if (bearerToken != null && bearerToken.startsWith(tokenPrefix + " ")) {
             return bearerToken.substring(7);

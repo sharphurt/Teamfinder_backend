@@ -3,6 +3,7 @@ package ru.catstack.auth.security.jwt;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
+import ru.catstack.auth.exception.JwtAuthenticationException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
