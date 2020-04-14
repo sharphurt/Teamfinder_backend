@@ -1,6 +1,7 @@
 package ru.catstack.auth.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.catstack.auth.model.Session;
 import ru.catstack.auth.model.token.RefreshToken;
 
@@ -12,11 +13,13 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     @Override
     Optional<Session> findById(Long id);
 
-  //  Optional<Session> findByRefreshToken(RefreshToken refreshToken);
-
     Optional<Session> findByUserId(Long userId);
 
+    @Transactional
     void deleteAllByUserId(Long id);
+
+    @Transactional
+    void deleteByDeviceId(String deviceId);
 
     Byte countAllByUserId(Long id);
 

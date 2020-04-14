@@ -1,14 +1,18 @@
 package ru.catstack.auth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.ResourceAlreadyInUseException;
 import ru.catstack.auth.exception.TokenRefreshException;
+import ru.catstack.auth.exception.UserLogOutException;
 import ru.catstack.auth.model.Session;
 import ru.catstack.auth.model.User;
+import ru.catstack.auth.model.payload.request.LogOutRequest;
 import ru.catstack.auth.model.payload.request.LoginRequest;
 import ru.catstack.auth.model.payload.request.RegistrationRequest;
 import ru.catstack.auth.model.payload.request.TokenRefreshRequest;
@@ -97,4 +101,18 @@ public class AuthService {
                 .map(this::generateToken))
                 .orElseThrow(() -> new TokenRefreshException(tokenRefreshRequest.getRefreshToken(), "Missing refresh token in database. Please login again"));
     }
+
+    public void logoutUser(LogOutRequest logOutRequest) {
+        var currentUser = userService.getLoggedInUser();
+        var deviceId = logOutRequest.getDeviceInfo().getDeviceId();
+        currentUser.map(user -> {
+            var session = sessionService.findByUserId(user.getId())
+                    .filter(device -> device.getDeviceId().equals(deviceId))
+                    .orElseThrow(() -> new UserLogOutException(deviceId, "Invalid device Id supplied. No matching session found for the given user"));
+            refreshTokenService.deleteBySessionId(session.getId());
+            sessionService.deleteByDeviceId(deviceId);
+            return true;
+        }).orElseThrow(() -> new UserLogOutException(deviceId, "User is not logged in"));
+    }
+
 }

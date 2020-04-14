@@ -1,6 +1,7 @@
 package ru.catstack.auth.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.catstack.auth.exception.TokenRefreshException;
 import ru.catstack.auth.exception.UserLoginException;
 import ru.catstack.auth.exception.UserRegistrationException;
+import ru.catstack.auth.model.payload.request.LogOutRequest;
 import ru.catstack.auth.model.payload.request.LoginRequest;
 import ru.catstack.auth.model.payload.request.RegistrationRequest;
 import ru.catstack.auth.model.payload.request.TokenRefreshRequest;
@@ -70,6 +72,12 @@ public class AuthenticationController {
                 })
                 .orElseThrow(() -> new TokenRefreshException(tokenRefreshRequest.getRefreshToken(),
                         "Unexpected error during token refresh. Please logout and login again."));
+    }
+
+    @PostMapping("logout")
+    public ApiResponse logoutUser(@Valid @RequestBody LogOutRequest logOutRequest) {
+        authService.logoutUser(logOutRequest);
+        return new ApiResponse("Log out successfully");
     }
 }
 

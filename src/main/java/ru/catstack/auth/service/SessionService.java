@@ -47,9 +47,12 @@ public class SessionService {
         return sessionRepository.countAllByUserId(id);
     }
 
-    @Transactional
-    public void deleteAllByUserId(Long id) {
+    void deleteAllByUserId(Long id) {
         sessionRepository.deleteAllByUserId(id);
+    }
+
+    void deleteByDeviceId(String deviceId) {
+        sessionRepository.deleteByDeviceId(deviceId);
     }
 
     boolean isDeviceAlreadyExists(DeviceInfo deviceInfo) {

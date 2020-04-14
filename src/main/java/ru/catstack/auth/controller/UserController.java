@@ -37,7 +37,7 @@ public class UserController {
     @GetMapping("profile")
     @PreAuthorize("hasRole('USER_ROLE')")
     public ApiResponse getUserProfile() {
-        var loggedUser = getLoggedInUser();
+        var loggedUser = userService.getLoggedInUser();
         return loggedUser.map(user -> {
             var userProfileData = userService.findById(user.getId());
             return new ApiResponse(userProfileData);
@@ -55,10 +55,5 @@ public class UserController {
 //        }).orElseThrow(() -> new AccessDeniedException("Access denied for unauthenticated user"));
 //    }
 
-    private Optional<JwtUser> getLoggedInUser() {
-        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken))
-            return Optional.ofNullable((JwtUser) auth.getPrincipal());
-        return Optional.empty();
-    }
+
 }

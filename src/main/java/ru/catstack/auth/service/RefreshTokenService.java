@@ -56,6 +56,11 @@ public class RefreshTokenService {
         refreshTokenRepository.deleteByToken(token);
     }
 
+    void deleteBySessionId(Long id) {
+        refreshTokenRepository.deleteBySessionId(id);
+    }
+
+
     void increaseCount(RefreshToken refreshToken) {
         refreshToken.incrementRefreshCount();
         save(refreshToken);
