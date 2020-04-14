@@ -43,6 +43,10 @@
                 <constraints nullable="true"/>
             </column>
 
+            <column name="has_picture" type="BOOLEAN">
+                <constraints nullable="true"/>
+            </column>
+
             <column name="created_at" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
                 <constraints nullable="false"/>
             </column>
@@ -144,6 +148,30 @@
             </column>
 
             <column name="role_id" type="BIGINT">
+                <constraints nullable="false" unique="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1.0.6" author="sharphurt">
+        <createTable tableName="images">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="type" type="VARCHAR(10)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="pic_bytes" type="IMAGE">
                 <constraints nullable="false" unique="false"/>
             </column>
         </createTable>

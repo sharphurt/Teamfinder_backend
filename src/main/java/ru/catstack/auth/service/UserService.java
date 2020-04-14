@@ -67,10 +67,14 @@ public class UserService {
         userRepository.setAboutMeById(id, about);
     }
 
+    public void updateHasPictureById(Long id, boolean hasPic) {
+        userRepository.updateHasPictureById(id, hasPic);
+    }
+
     User createUser(RegistrationRequest registerRequest) {
         return new User(registerRequest.getEmail(), passwordEncoder.encode(registerRequest.getPassword()),
                 registerRequest.getUsername(), registerRequest.getFirstName(), registerRequest.getLastName(),
-                registerRequest.getAge(), Set.of(new Role()), Status.ACTIVE);
+                registerRequest.getAge(), false, Set.of(new Role()), Status.ACTIVE);
     }
 
     public Long getUserIdFromRequest(HttpServletRequest request) {

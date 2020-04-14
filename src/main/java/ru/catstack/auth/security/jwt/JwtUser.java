@@ -37,7 +37,7 @@ public class JwtUser implements UserDetails {
     }
 
     public User toUser() {
-        return new User(this.id, this.email, this.password, this.username, this.firstName, this.lastName, this.age);
+        return new User(this.id, this.email, this.password, this.username, this.firstName, this.lastName, this.age, false);
     }
 
 

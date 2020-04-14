@@ -34,8 +34,11 @@ public class User extends DateAudit {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "aboutMe")
+    @Column(name = "about_me")
     private String aboutMe;
+
+    @Column(name = "has_picture")
+    private boolean hasPicture;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -53,7 +56,7 @@ public class User extends DateAudit {
     }
 
     public User(String email, String password, String username, String firstName,
-                String lastName, Byte age, Set<Role> roles, Status status) {
+                String lastName, Byte age, boolean hasPicture, Set<Role> roles, Status status) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -62,10 +65,11 @@ public class User extends DateAudit {
         this.age = age;
         this.roles = roles;
         this.status = status;
+        this.hasPicture = hasPicture;
     }
 
     public User(Long id, String email, String password, String username, String firstName,
-                String lastName, Byte age) {
+                String lastName, Byte age, boolean hasPicture) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -73,6 +77,7 @@ public class User extends DateAudit {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
+        this.hasPicture = hasPicture;
     }
 
     public Long getId() {
@@ -113,5 +118,9 @@ public class User extends DateAudit {
 
     public String getAboutMe() {
         return aboutMe;
+    }
+
+    public boolean isHasPicture() {
+        return hasPicture;
     }
 }

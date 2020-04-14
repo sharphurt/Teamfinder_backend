@@ -33,11 +33,6 @@ public class AuthControllerAdvice extends ResponseEntityExceptionHandler {
         this.messageSource = messageSource;
     }
 
-
-    private List<String> processAllErrors(List<ObjectError> allErrors) {
-        return allErrors.stream().map(this::resolveLocalizedErrorMessage).collect(Collectors.toList());
-    }
-
     private String resolveLocalizedErrorMessage(ObjectError objectError) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         String localizedErrorMessage = messageSource.getMessage(objectError, currentLocale);
@@ -51,6 +46,14 @@ public class AuthControllerAdvice extends ResponseEntityExceptionHandler {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    @ExceptionHandler(value = ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ApiResponse handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+        var response = new ApiErrorResponse(ex.getMessage(), 404, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
     }
 
     @ExceptionHandler(value = ResourceAlreadyInUseException.class)
