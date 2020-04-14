@@ -15,21 +15,15 @@ public class JwtUser implements UserDetails {
     private final String username;
     private final String firstName;
     private final String lastName;
-    private final Integer age;
+    private final Byte age;
     private final String password;
     private final String email;
     private final boolean enabled;
     private final Instant lastPasswordResetDate;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    JwtUser(
-            Long id,
-            String username,
-            String firstName, String lastName, Integer age, String email,
-            String password, Collection<? extends GrantedAuthority> authorities,
-            boolean enabled,
-            Instant lastPasswordResetDate
-    ) {
+    JwtUser(Long id, String username, String firstName, String lastName, Byte age, String email, String password,
+            Collection<? extends GrantedAuthority> authorities, boolean enabled, Instant lastPasswordResetDate) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;

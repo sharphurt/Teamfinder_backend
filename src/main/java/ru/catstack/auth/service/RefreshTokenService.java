@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.TokenRefreshException;
 import ru.catstack.auth.model.Session;
-import ru.catstack.auth.model.payload.TokenRefreshRequest;
+import ru.catstack.auth.model.payload.request.TokenRefreshRequest;
 import ru.catstack.auth.model.token.RefreshToken;
 import ru.catstack.auth.repository.RefreshTokenRepository;
 
@@ -52,7 +52,7 @@ public class RefreshTokenService {
         }
     }
 
-    void deleteByToken(String token) {
+    private void deleteByToken(String token) {
         refreshTokenRepository.deleteByToken(token);
     }
 

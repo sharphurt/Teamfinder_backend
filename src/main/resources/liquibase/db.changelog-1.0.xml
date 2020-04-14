@@ -6,7 +6,7 @@
 
     <changeSet id="1.0.0" author="sharphurt">
         <!--Users table-->
-        <createTable tableName="user">
+        <createTable tableName="users">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -23,11 +23,11 @@
                 <constraints nullable="false" unique="false"/>
             </column>
 
-            <column name="age" type="INTEGER">
+            <column name="age" type="TINYINT">
                 <constraints nullable="false" unique="false"/>
             </column>
 
-            <column name="email" type="VARCHAR(255)">
+            <column name="email" type="VARCHAR(100)">
                 <constraints nullable="false" unique="true"/>
             </column>
 
@@ -35,8 +35,12 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="role" type="VARCHAR(255)" defaultValue="ROLE_USER">
+            <column name="role" type="VARCHAR(10)" defaultValue="ROLE_USER">
                 <constraints nullable="false"/>
+            </column>
+
+            <column name="about_me" type="VARCHAR(500)">
+                <constraints nullable="true"/>
             </column>
 
             <column name="created_at" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
@@ -140,22 +144,6 @@
             </column>
 
             <column name="role_id" type="BIGINT">
-                <constraints nullable="false" unique="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="1.0.7" author="sharphurt">
-        <createTable tableName="user_profile_data">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-
-            <column name="user_id" type="BIGINT">
-                <constraints nullable="false" unique="false"/>
-            </column>
-
-            <column name="about_me" type="VARCHAR(500)">
                 <constraints nullable="false" unique="false"/>
             </column>
         </createTable>

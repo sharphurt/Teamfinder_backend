@@ -1,4 +1,6 @@
-package ru.catstack.auth.model.payload;
+package ru.catstack.auth.model.payload.request;
+
+import ru.catstack.auth.model.payload.DeviceInfo;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

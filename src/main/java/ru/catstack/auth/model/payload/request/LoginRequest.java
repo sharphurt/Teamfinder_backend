@@ -1,7 +1,8 @@
-package ru.catstack.auth.model.payload;
+package ru.catstack.auth.model.payload.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import ru.catstack.auth.model.payload.DeviceInfo;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;

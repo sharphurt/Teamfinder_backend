@@ -1,27 +1,30 @@
 package ru.catstack.auth.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.catstack.auth.exception.TokenRefreshException;
 import ru.catstack.auth.exception.UserLoginException;
 import ru.catstack.auth.exception.UserRegistrationException;
-import ru.catstack.auth.model.payload.*;
+import ru.catstack.auth.model.payload.request.LoginRequest;
+import ru.catstack.auth.model.payload.request.RegistrationRequest;
+import ru.catstack.auth.model.payload.request.TokenRefreshRequest;
+import ru.catstack.auth.model.payload.response.ApiResponse;
+import ru.catstack.auth.model.payload.response.JwtAuthResponse;
 import ru.catstack.auth.model.token.RefreshToken;
 import ru.catstack.auth.security.jwt.JwtTokenProvider;
 import ru.catstack.auth.security.jwt.JwtUser;
 import ru.catstack.auth.service.AuthService;
 
 import javax.validation.Valid;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping(value = "/api/auth/")
 public class AuthenticationController {
-
-    private final Logger logger = Logger.getLogger(AuthenticationController.class.getName());
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
 
@@ -32,37 +35,38 @@ public class AuthenticationController {
     }
 
     @PostMapping("login")
-    public ResponseEntity authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        Authentication auth = authService.authenticateUser(loginRequest)
+    public ApiResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        Authentication auth = authService
+                .authenticateUser(loginRequest)
                 .orElseThrow(() -> new UserLoginException("Couldn't login user [" + loginRequest + "]"));
 
-        JwtUser customUserDetails = (JwtUser) auth.getPrincipal();
-        logger.info("Logged in User returned [API]: " + customUserDetails.getUsername());
+        var customUserDetails = (JwtUser) auth.getPrincipal();
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         return authService.createAndPersistRefreshTokenForSession(auth, loginRequest)
                 .map(RefreshToken::getToken)
                 .map(refreshToken -> {
-                    String jwtToken = authService.generateToken(customUserDetails.toUser());
-                    return ResponseEntity.ok(new JwtAuthenticationResponse(jwtToken, refreshToken, jwtTokenProvider.getValidityDuration()));
+                    var jwtToken = authService.generateToken(customUserDetails.toUser());
+                    var response = new JwtAuthResponse(jwtToken, refreshToken, jwtTokenProvider.getValidityDuration());
+                    return new ApiResponse(response);
                 })
                 .orElseThrow(() -> new UserLoginException("Couldn't create refresh token for: [" + loginRequest + "]"));
     }
 
     @PostMapping("register")
-    public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
+    public ApiResponse registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
         return authService.registerUser(registrationRequest)
-                .map(user -> ResponseEntity.ok(new ApiResponse(true, "User registered successfully")))
+                .map(user -> new ApiResponse("User registered successfully"))
                 .orElseThrow(() -> new UserRegistrationException(registrationRequest.getEmail(), "Missing user object in database"));
     }
 
     @PostMapping("refresh")
-    public ResponseEntity refreshJwtToken(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
+    public ApiResponse refreshJwtToken(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
         return authService.refreshJwtToken(tokenRefreshRequest)
                 .map(updatedToken -> {
-                    String refreshToken = tokenRefreshRequest.getRefreshToken();
-                    logger.info("Created new Jwt Auth token: " + updatedToken);
-                    return ResponseEntity.ok(new JwtAuthenticationResponse(updatedToken, refreshToken, jwtTokenProvider.getValidityDuration()));
+                    var refreshToken = tokenRefreshRequest.getRefreshToken();
+                    var response = new JwtAuthResponse(updatedToken, refreshToken, jwtTokenProvider.getValidityDuration());
+                    return new ApiResponse(response);
                 })
                 .orElseThrow(() -> new TokenRefreshException(tokenRefreshRequest.getRefreshToken(),
                         "Unexpected error during token refresh. Please logout and login again."));

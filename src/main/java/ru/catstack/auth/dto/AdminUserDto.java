@@ -10,15 +10,24 @@ import ru.catstack.auth.model.User;
 public class AdminUserDto {
     private Long id;
     private String username;
+    private String firstName;
+    private String lastName;
+    private Byte age;
     private String email;
     private String status;
 
-    public Long getId() {
-        return id;
+    private AdminUserDto(Long id, String username, String firstName, String lastName, Byte age, String email, String status) {
+        this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.email = email;
+        this.status = status;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getId() {
+        return id;
     }
 
     public String getUsername() {
@@ -29,20 +38,8 @@ public class AdminUserDto {
         this.username = username;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    private void setStatus(String status) {
-        this.status = status;
-    }
-
     public static AdminUserDto fromUser(User user) {
-        AdminUserDto adminUserDto = new AdminUserDto();
-        adminUserDto.setId(user.getId());
-        adminUserDto.setUsername(user.getUsername());
-        adminUserDto.setEmail(user.getEmail());
-        adminUserDto.setStatus(user.getStatus().name());
-        return adminUserDto;
+        return new AdminUserDto(user.getId(), user.getUsername(), user.getFirstName(),
+                user.getLastName(), user.getAge(), user.getEmail(), user.getStatus().name());
     }
 }

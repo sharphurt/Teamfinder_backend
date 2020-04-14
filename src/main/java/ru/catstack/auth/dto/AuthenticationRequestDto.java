@@ -3,7 +3,7 @@ package ru.catstack.auth.dto;
 import lombok.Data;
 
 @Data
-public class AuthenticationRequestDto {
+class AuthenticationRequestDto {
     private String username;
     private String password;
 

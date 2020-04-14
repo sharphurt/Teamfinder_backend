@@ -4,31 +4,28 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.catstack.auth.exception.*;
-import ru.catstack.auth.model.payload.ApiResponse;
+import ru.catstack.auth.model.payload.response.ApiErrorResponse;
+import ru.catstack.auth.model.payload.response.ApiResponse;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice
-public class AuthControllerAdvice {
-
-    private static final Logger logger = Logger.getLogger(AuthControllerAdvice.class.getName());
-
+@ControllerAdvice
+public class AuthControllerAdvice extends ResponseEntityExceptionHandler {
     private final MessageSource messageSource;
 
     @Autowired
@@ -36,15 +33,6 @@ public class AuthControllerAdvice {
         this.messageSource = messageSource;
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ApiResponse processValidationError(MethodArgumentNotValidException ex, WebRequest request) {
-        BindingResult result = ex.getBindingResult();
-        List<ObjectError> allErrors = result.getAllErrors();
-        String data = String.join("\n", processAllErrors(allErrors));
-        return new ApiResponse(false, data, ex.getClass().getName(), resolvePathFromWebRequest(request));
-    }
 
     private List<String> processAllErrors(List<ObjectError> allErrors) {
         return allErrors.stream().map(this::resolveLocalizedErrorMessage).collect(Collectors.toList());
@@ -57,7 +45,7 @@ public class AuthControllerAdvice {
         return localizedErrorMessage;
     }
 
-    private String resolvePathFromWebRequest(WebRequest request) {
+    private String pathFromRequest(WebRequest request) {
         try {
             return ((ServletWebRequest) request).getRequest().getAttribute("javax.servlet.forward.request_uri").toString();
         } catch (Exception ex) {
@@ -69,56 +57,89 @@ public class AuthControllerAdvice {
     @ResponseStatus(HttpStatus.IM_USED)
     @ResponseBody
     public ApiResponse handleResourceAlreadyInUseException(ResourceAlreadyInUseException ex, WebRequest request) {
-        return new ApiResponse(false, ex.getMessage(), ex.getClass().getName(), resolvePathFromWebRequest(request));
+        var response = new ApiErrorResponse(ex.getMessage(), 226, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
     }
-
 
     @ExceptionHandler(value = BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ApiResponse handleBadRequestException(BadRequestException ex, WebRequest request) {
-        return new ApiResponse(false, ex.getMessage(), ex.getClass().getName(), resolvePathFromWebRequest(request));
+        var response = new ApiErrorResponse(ex.getMessage(), 400, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
     }
 
     @ExceptionHandler(value = UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public ApiResponse handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
-        return new ApiResponse(false, ex.getMessage(), ex.getClass().getName(), resolvePathFromWebRequest(request));
+        var response = new ApiErrorResponse(ex.getMessage(), 404, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
     }
 
     @ExceptionHandler(value = UserLoginException.class)
     @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
     @ResponseBody
     public ApiResponse handleUserLoginException(UserLoginException ex, WebRequest request) {
-        return new ApiResponse(false, ex.getMessage(), ex.getClass().getName(), resolvePathFromWebRequest(request));
+        var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
     }
 
     @ExceptionHandler(value = BadCredentialsException.class)
     @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
     @ResponseBody
     public ApiResponse handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
-        return new ApiResponse(false, ex.getMessage(), ex.getClass().getName(), resolvePathFromWebRequest(request));
+        var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
     }
 
     @ExceptionHandler(value = UserRegistrationException.class)
     @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
     @ResponseBody
     public ApiResponse handleUserRegistrationException(@NotNull UserRegistrationException ex, WebRequest request) {
-        return new ApiResponse(false, ex.getMessage(), ex.getClass().getName(), resolvePathFromWebRequest(request));
+        var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
     }
 
     @ExceptionHandler(value = TokenRefreshException.class)
     @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
     @ResponseBody
     public ApiResponse handleTokenRefreshException(TokenRefreshException ex, WebRequest request) {
-        return new ApiResponse(false, ex.getMessage(), ex.getClass().getName(), resolvePathFromWebRequest(request));
+        var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
     }
 
     @ExceptionHandler(value = InvalidJwtTokenException.class)
     @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
     @ResponseBody
     public ApiResponse handleInvalidJwtTokenException(TokenRefreshException ex, WebRequest request) {
-        return new ApiResponse(false, ex.getMessage(), ex.getClass().getName(), resolvePathFromWebRequest(request));
+        var response = new ApiErrorResponse( ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers, HttpStatus status,
+                                                                  WebRequest request) {
+        var errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .findFirst()
+                .orElse(ex.getMessage());
+        var response = new ApiErrorResponse(errorMessage, 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ResponseEntity<>(new ApiResponse(response), HttpStatus.EXPECTATION_FAILED);
+    }
+
+    @ExceptionHandler(value = JwtAuthenticationException.class)
+    @ResponseBody
+    public ApiResponse handleJwtAuthenticationException(JwtAuthenticationException ex, WebRequest request) {
+        var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
+    }
+
+    @ExceptionHandler(value = NoContentException.class)
+    @ResponseBody
+    public ApiResponse handleNoContentException(NoContentException ex, WebRequest request) {
+        var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
     }
 }

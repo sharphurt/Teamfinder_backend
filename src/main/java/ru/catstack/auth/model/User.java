@@ -2,17 +2,14 @@ package ru.catstack.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cascade;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import ru.catstack.auth.model.audit.DateAudit;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity(name = "user")
-@Table(name = "user")
+@Entity(name = "User")
+@Table(name = "users")
 public class User extends DateAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,13 +25,17 @@ public class User extends DateAudit {
     private String lastName;
 
     @Column(name = "age")
-    private Integer age;
+    private Byte age;
 
     @Column(name = "email")
     private String email;
 
+    @JsonIgnore
     @Column(name = "password")
     private String password;
+
+    @Column(name = "aboutMe")
+    private String aboutMe;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -52,7 +53,7 @@ public class User extends DateAudit {
     }
 
     public User(String email, String password, String username, String firstName,
-                String lastName, Integer age, Set<Role> roles, Status status) {
+                String lastName, Byte age, Set<Role> roles, Status status) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -64,7 +65,7 @@ public class User extends DateAudit {
     }
 
     public User(Long id, String email, String password, String username, String firstName,
-                String lastName, Integer age) {
+                String lastName, Byte age) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -106,7 +107,11 @@ public class User extends DateAudit {
         return lastName;
     }
 
-    public Integer getAge() {
+    public Byte getAge() {
         return age;
+    }
+
+    public String getAboutMe() {
+        return aboutMe;
     }
 }

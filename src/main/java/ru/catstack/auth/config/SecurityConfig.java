@@ -7,6 +7,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpServerErrorException;
+import ru.catstack.auth.advice.CustomAccessDeniedHandler;
+import ru.catstack.auth.exception.JwtAuthenticationException;
 import ru.catstack.auth.security.jwt.JwtConfigurer;
 import ru.catstack.auth.security.jwt.JwtTokenProvider;
 
@@ -49,6 +54,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(SET_USER_INFORMATION_ENDPOINT).authenticated()
                 .anyRequest().authenticated()
                 .and()
-                .apply(new JwtConfigurer(jwtTokenProvider));
+                .apply(new JwtConfigurer(jwtTokenProvider))
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint());
+    }
+
+    private AuthenticationEntryPoint authenticationEntryPoint(){
+        return new CustomAccessDeniedHandler();
     }
 }

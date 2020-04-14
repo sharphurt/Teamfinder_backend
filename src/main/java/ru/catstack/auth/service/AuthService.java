@@ -9,9 +9,9 @@ import ru.catstack.auth.exception.ResourceAlreadyInUseException;
 import ru.catstack.auth.exception.TokenRefreshException;
 import ru.catstack.auth.model.Session;
 import ru.catstack.auth.model.User;
-import ru.catstack.auth.model.payload.LoginRequest;
-import ru.catstack.auth.model.payload.RegistrationRequest;
-import ru.catstack.auth.model.payload.TokenRefreshRequest;
+import ru.catstack.auth.model.payload.request.LoginRequest;
+import ru.catstack.auth.model.payload.request.RegistrationRequest;
+import ru.catstack.auth.model.payload.request.TokenRefreshRequest;
 import ru.catstack.auth.model.token.RefreshToken;
 import ru.catstack.auth.security.jwt.JwtTokenProvider;
 import ru.catstack.auth.security.jwt.JwtUser;
@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 
 @Service
 public class AuthService {
-    private final Logger logger = Logger.getLogger(AuthService.class.getName());
     private final UserService userService;
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenService refreshTokenService;
@@ -29,11 +28,8 @@ public class AuthService {
     private final SessionService sessionService;
 
     @Autowired
-    public AuthService(UserService userService,
-                       JwtTokenProvider tokenProvider,
-                       RefreshTokenService refreshTokenService,
-                       AuthenticationManager authenticationManager,
-                       SessionService sessionService) {
+    public AuthService(UserService userService, JwtTokenProvider tokenProvider, RefreshTokenService refreshTokenService,
+                       AuthenticationManager authenticationManager, SessionService sessionService) {
         this.userService = userService;
         this.tokenProvider = tokenProvider;
         this.refreshTokenService = refreshTokenService;
@@ -42,19 +38,15 @@ public class AuthService {
     }
 
     public Optional<User> registerUser(RegistrationRequest registrationRequest) {
-        String email = registrationRequest.getEmail();
-        String username = registrationRequest.getUsername();
-        if (emailAlreadyExists(email)) {
-            logger.severe("Email already exists: " + email);
+        var email = registrationRequest.getEmail();
+        var username = registrationRequest.getUsername();
+        if (emailAlreadyExists(email))
             throw new ResourceAlreadyInUseException("Email", "address", email);
-        }
-        if (usernameAlreadyExists(username)) {
-            logger.severe("Username already exists: " + username);
+        if (usernameAlreadyExists(username))
             throw new ResourceAlreadyInUseException("Username", "value", username);
-        }
-        logger.info("Trying to register new user [" + email + "]");
-        User newUser = userService.createUser(registrationRequest);
-        User registeredNewUser = userService.save(newUser);
+
+        var newUser = userService.createUser(registrationRequest);
+        var registeredNewUser = userService.save(newUser);
         return Optional.ofNullable(registeredNewUser);
     }
 
@@ -76,15 +68,14 @@ public class AuthService {
     }
 
     public Optional<RefreshToken> createAndPersistRefreshTokenForSession(Authentication auth, LoginRequest loginRequest) {
-        JwtUser user = (JwtUser) auth.getPrincipal();
+        var user = (JwtUser) auth.getPrincipal();
         if (sessionService.countAllByUserId(user.getId()) > 4)
             sessionService.deleteAllByUserId(user.getId());
-
         if (sessionService.isDeviceAlreadyExists(loginRequest.getDeviceInfo()))
             throw new ResourceAlreadyInUseException("Device", "device id", loginRequest.getDeviceInfo().getDeviceId());
 
         Session newSession = new Session(user.getId(), loginRequest.getDeviceInfo(), true);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(newSession);
+        var refreshToken = refreshTokenService.createRefreshToken(newSession);
         refreshToken = refreshTokenService.save(refreshToken);
         return Optional.ofNullable(refreshToken);
     }
@@ -100,7 +91,7 @@ public class AuthService {
                 })
                 .map(RefreshToken::getUserSession)
                 .map(user -> {
-                    Optional<User> userById = userService.findById(user.getId());
+                    var userById = userService.findById(user.getId());
                     return userById.get();
                 })
                 .map(this::generateToken))

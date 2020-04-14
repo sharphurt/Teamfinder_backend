@@ -1,4 +1,4 @@
-package ru.catstack.auth.model.payload;
+package ru.catstack.auth.model.payload.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -28,7 +28,7 @@ public class RegistrationRequest {
 
     @ApiModelProperty(value = "A valid age", required = true)
     @Min(value = 12, message = "Only users over 12 years old are allowed")
-    @Max(value = 100, message = "Age cannot be higher than 100 years")
+    @Max(value = 127, message = "Age cannot be higher than 127 years")
     private Integer age;
 
     @NotBlank(message = "Email cannot be blank")
@@ -41,8 +41,7 @@ public class RegistrationRequest {
     @ApiModelProperty(value = "A valid password string", required = true, allowableValues = "NonEmpty String")
     private String password;
 
-    public RegistrationRequest(String username, String email, String firstName, String lastName, Integer age,
-                               String password) {
+    public RegistrationRequest(String username, String email, String firstName, String lastName, Integer age, String password) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -74,7 +73,7 @@ public class RegistrationRequest {
         return lastName;
     }
 
-    public Integer getAge() {
-        return age;
+    public Byte getAge() {
+        return age.byteValue();
     }
 }
