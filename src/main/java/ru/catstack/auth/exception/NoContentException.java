@@ -11,7 +11,7 @@ public class NoContentException extends RuntimeException {
     private final transient Object fieldValue;
 
     public NoContentException(String resourceName, String fieldName, Object fieldValue) {
-        super(String.format("%s does not exists with %s : '%s'", resourceName, fieldName, fieldValue));
+        super(String.format("%s does not exists with %s: '%s'", resourceName, fieldName, fieldValue));
         this.resourceName = resourceName;
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;

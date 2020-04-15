@@ -8,11 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import ru.catstack.auth.advice.CustomAccessDeniedHandler;
-import ru.catstack.auth.exception.JwtAuthenticationException;
 import ru.catstack.auth.security.jwt.JwtConfigurer;
 import ru.catstack.auth.security.jwt.JwtTokenProvider;
 
@@ -46,29 +42,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                    .httpBasic().disable()
-                    .csrf().disable()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .httpBasic().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .authorizeRequests()
-                    .antMatchers(LOGIN_ENDPOINT).permitAll()
-                    .antMatchers(REGISTER_ENDPOINT).permitAll()
-                    .antMatchers(ADMIN_ENDPOINT).hasRole("ADMIN")
-                    .antMatchers(REFRESH_ENDPOINT).permitAll()
-                    .antMatchers(USER_INFORMATION_ENDPOINT).authenticated()
-                    .antMatchers(SET_USER_INFORMATION_ENDPOINT).authenticated()
-                    .antMatchers(LOGOUT_ENDPOINT).authenticated()
-                    .antMatchers(UPLOAD_IMAGE_ENDPOINT).authenticated()
-                    .antMatchers(GET_IMAGE_ENDPOINT).authenticated()
-                    .anyRequest().authenticated()
+                .authorizeRequests()
+                .antMatchers(LOGIN_ENDPOINT).permitAll()
+                .antMatchers(REGISTER_ENDPOINT).permitAll()
+                .antMatchers(ADMIN_ENDPOINT).hasRole("ADMIN")
+                .antMatchers(REFRESH_ENDPOINT).permitAll()
+                .antMatchers(USER_INFORMATION_ENDPOINT).authenticated()
+                .antMatchers(SET_USER_INFORMATION_ENDPOINT).authenticated()
+                .antMatchers(LOGOUT_ENDPOINT).authenticated()
+                .antMatchers(UPLOAD_IMAGE_ENDPOINT).authenticated()
+                .antMatchers(GET_IMAGE_ENDPOINT).authenticated()
+                .anyRequest().authenticated()
                 .and()
-                   .apply(new JwtConfigurer(jwtTokenProvider))
+                .apply(new JwtConfigurer(jwtTokenProvider))
                 .and()
-                    .exceptionHandling()
-                    .authenticationEntryPoint(authenticationEntryPoint());
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint());
     }
 
-    private AuthenticationEntryPoint authenticationEntryPoint(){
+    private AuthenticationEntryPoint authenticationEntryPoint() {
         return new CustomAccessDeniedHandler();
     }
 }

@@ -16,7 +16,7 @@ public class CustomAccessDeniedHandler implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest req, HttpServletResponse res, AuthenticationException authException) throws IOException {
-        var body = new ApiErrorResponse("Access denied", 403, "", "");
+        var body = new ApiErrorResponse("Access denied", 403, authException.getCause().toString(), req.getServletPath());
         res.setContentType("application/json;charset=UTF-8");
         res.setStatus(403);
         res.getWriter().write(mapper.writeValueAsString(new ApiResponse(body)));

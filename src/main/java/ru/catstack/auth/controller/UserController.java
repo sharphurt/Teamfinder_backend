@@ -1,18 +1,27 @@
 package ru.catstack.auth.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.catstack.auth.dto.UserDto;
 import ru.catstack.auth.exception.NoContentException;
+import ru.catstack.auth.model.payload.response.ApiErrorResponse;
 import ru.catstack.auth.model.payload.response.ApiResponse;
 import ru.catstack.auth.security.jwt.JwtUser;
 import ru.catstack.auth.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -55,5 +64,5 @@ public class UserController {
 //        }).orElseThrow(() -> new AccessDeniedException("Access denied for unauthenticated user"));
 //    }
 
-
 }
+

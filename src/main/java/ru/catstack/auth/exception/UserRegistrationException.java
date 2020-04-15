@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class UserRegistrationException extends RuntimeException {
 
     public UserRegistrationException(String user, String message) {
-        super(String.format("Failed to register User[%s] : '%s'", user, message));
+        super(String.format("Failed to register User %s: '%s'", user, message));
     }
 
 }

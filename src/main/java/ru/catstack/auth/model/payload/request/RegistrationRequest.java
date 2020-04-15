@@ -2,27 +2,24 @@ package ru.catstack.auth.model.payload.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 
 @ApiModel(value = "Registration Request", description = "The registration request payload")
 public class RegistrationRequest {
 
     @NotBlank(message = "Username cannot be blank")
-    @NotNull(message = "Username cannot be null")
+    @Length(min = 2, max = 30, message = "Username length must be between 2 and 30 characters")
+    @Pattern(regexp = "[a-zA-Z0-9]", message = "The username can only include uppercase and lowercase letters of the English alphabet and numbers")
     @ApiModelProperty(value = "A valid username", required = true, allowableValues = "NonEmpty String")
     private String username;
 
     @NotBlank(message = "First name cannot be blank")
-    @NotNull(message = "First name cannot be null")
     @ApiModelProperty(value = "A valid first name", required = true, allowableValues = "NonEmpty String")
     private String firstName;
 
     @NotBlank(message = "Last name cannot be blank")
-    @NotNull(message = "Last name  cannot be null")
     @ApiModelProperty(value = "A valid last name", required = true, allowableValues = "NonEmpty String")
     private String lastName;
 
@@ -32,12 +29,12 @@ public class RegistrationRequest {
     private Integer age;
 
     @NotBlank(message = "Email cannot be blank")
-    @NotNull(message = "Email cannot be null")
+    @Email(message = "Email is not valid")
     @ApiModelProperty(value = "A valid email", required = true, allowableValues = "NonEmpty String")
     private String email;
 
     @NotBlank(message = "Password cannot be blank")
-    @NotNull(message = "Password cannot be null")
+    @Length(min = 8, max = 50, message = "Password length must be between 8 and 50 characters")
     @ApiModelProperty(value = "A valid password string", required = true, allowableValues = "NonEmpty String")
     private String password;
 

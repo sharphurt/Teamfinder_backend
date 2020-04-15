@@ -18,6 +18,9 @@ public class ApiResponse {
         this.response = successResponse;
     }
 
+    public ApiResponse(boolean b, String toString) {
+    }
+
     public ApiErrorResponse getError() {
         return error;
     }

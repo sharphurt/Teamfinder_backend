@@ -54,11 +54,11 @@ public class AuthService {
         return Optional.ofNullable(registeredNewUser);
     }
 
-    private Boolean emailAlreadyExists(String email) {
+    public Boolean emailAlreadyExists(String email) {
         return userService.existsByEmail(email);
     }
 
-    private Boolean usernameAlreadyExists(String username) {
+    public Boolean usernameAlreadyExists(String username) {
         return userService.existsByUsername(username);
     }
 

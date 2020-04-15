@@ -1,13 +1,12 @@
 package ru.catstack.auth.controller;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.catstack.auth.exception.TokenRefreshException;
 import ru.catstack.auth.exception.UserLoginException;
 import ru.catstack.auth.exception.UserRegistrationException;
@@ -36,7 +35,19 @@ public class AuthenticationController {
         this.authService = authService;
     }
 
-    @PostMapping("login")
+    @GetMapping("/checkEmailInUse")
+    public ApiResponse checkEmailInUse(@RequestParam("email") String email) {
+        Boolean emailExists = authService.emailAlreadyExists(email);
+        return new ApiResponse(emailExists);
+    }
+
+    @GetMapping("/checkUsernameInUse")
+    public ApiResponse checkUsernameInUse(@RequestParam("username") String username) {
+        Boolean usernameExists = authService.usernameAlreadyExists(username);
+        return new ApiResponse(usernameExists);
+    }
+
+    @PostMapping("/login")
     public ApiResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication auth = authService
                 .authenticateUser(loginRequest)
@@ -55,14 +66,14 @@ public class AuthenticationController {
                 .orElseThrow(() -> new UserLoginException("Couldn't create refresh token for: [" + loginRequest + "]"));
     }
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public ApiResponse registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
         return authService.registerUser(registrationRequest)
                 .map(user -> new ApiResponse("User registered successfully"))
                 .orElseThrow(() -> new UserRegistrationException(registrationRequest.getEmail(), "Missing user object in database"));
     }
 
-    @PostMapping("refresh")
+    @PostMapping("/refresh")
     public ApiResponse refreshJwtToken(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
         return authService.refreshJwtToken(tokenRefreshRequest)
                 .map(updatedToken -> {
@@ -74,7 +85,7 @@ public class AuthenticationController {
                         "Unexpected error during token refresh. Please logout and login again."));
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public ApiResponse logoutUser(@Valid @RequestBody LogOutRequest logOutRequest) {
         authService.logoutUser(logOutRequest);
         return new ApiResponse("Log out successfully");
