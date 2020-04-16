@@ -60,7 +60,8 @@ public class AuthenticationController {
                 .map(RefreshToken::getToken)
                 .map(refreshToken -> {
                     var jwtToken = authService.generateToken(customUserDetails.toUser());
-                    var response = new JwtAuthResponse(jwtToken, refreshToken, jwtTokenProvider.getValidityDuration());
+                    var response = new JwtAuthResponse(jwtToken, refreshToken,
+                            jwtTokenProvider.getValidityDuration(), jwtTokenProvider.getTokenPrefix());
                     return new ApiResponse(response);
                 })
                 .orElseThrow(() -> new UserLoginException("Couldn't create refresh token for: [" + loginRequest + "]"));
@@ -78,7 +79,8 @@ public class AuthenticationController {
         return authService.refreshJwtToken(tokenRefreshRequest)
                 .map(updatedToken -> {
                     var refreshToken = tokenRefreshRequest.getRefreshToken();
-                    var response = new JwtAuthResponse(updatedToken, refreshToken, jwtTokenProvider.getValidityDuration());
+                    var response = new JwtAuthResponse(updatedToken, refreshToken,
+                            jwtTokenProvider.getValidityDuration(), jwtTokenProvider.getTokenPrefix());
                     return new ApiResponse(response);
                 })
                 .orElseThrow(() -> new TokenRefreshException(tokenRefreshRequest.getRefreshToken(),

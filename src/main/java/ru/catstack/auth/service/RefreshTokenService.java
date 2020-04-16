@@ -35,8 +35,7 @@ public class RefreshTokenService {
     }
 
     RefreshToken createRefreshToken(Session session) {
-        return new RefreshToken(UUID.randomUUID().toString(), session, 0L,
-                Instant.now().plusMillis(refreshTokenDurationMs));
+        return new RefreshToken(UUID.randomUUID().toString(), session, session.getUserId(), 0L, Instant.now().plusMillis(refreshTokenDurationMs));
     }
 
     void verifyExpiration(RefreshToken token) {
@@ -60,6 +59,9 @@ public class RefreshTokenService {
         refreshTokenRepository.deleteBySessionId(id);
     }
 
+    void deleteAllByUserId(Long id) {
+        refreshTokenRepository.deleteAllByUserId(id);
+    }
 
     void increaseCount(RefreshToken refreshToken) {
         refreshToken.incrementRefreshCount();

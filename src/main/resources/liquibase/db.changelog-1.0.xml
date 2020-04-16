@@ -7,7 +7,7 @@
     <changeSet id="1.0.0" author="sharphurt">
         <!--Users table-->
         <createTable tableName="users">
-            <column name="id" type="BIGINT" autoIncrement="true">
+            <column name="user_id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
@@ -124,6 +124,10 @@
             </column>
 
             <column name="session_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="user_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
 

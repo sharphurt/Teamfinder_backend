@@ -26,6 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String SET_USER_INFORMATION_ENDPOINT = "/api/user/setAboutMe";
     private static final String UPLOAD_IMAGE_ENDPOINT = "/api/image/upload";
     private static final String GET_IMAGE_ENDPOINT = "/api/image/get";
+    private static final String CHECK_EMAIL_IN_USE = "/api/auth/checkEmailInUse";
+    private static final String CHECK_USERNAME_IN_USE = "/api/auth/checkUsernameInUse";
 
 
     @Autowired
@@ -51,6 +53,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(REGISTER_ENDPOINT).permitAll()
                 .antMatchers(ADMIN_ENDPOINT).hasRole("ADMIN")
                 .antMatchers(REFRESH_ENDPOINT).permitAll()
+                .antMatchers(CHECK_EMAIL_IN_USE).permitAll()
+                .antMatchers(CHECK_USERNAME_IN_USE).permitAll()
                 .antMatchers(USER_INFORMATION_ENDPOINT).authenticated()
                 .antMatchers(SET_USER_INFORMATION_ENDPOINT).authenticated()
                 .antMatchers(LOGOUT_ENDPOINT).authenticated()

@@ -12,6 +12,7 @@ import java.util.Set;
 @Table(name = "users")
 public class User extends DateAudit {
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -43,7 +44,7 @@ public class User extends DateAudit {
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private Set<Role> roles = new HashSet<>();

@@ -10,8 +10,7 @@ import javax.validation.constraints.*;
 public class RegistrationRequest {
 
     @NotBlank(message = "Username cannot be blank")
-    @Length(min = 2, max = 30, message = "Username length must be between 2 and 30 characters")
-    @Pattern(regexp = "[a-zA-Z0-9]", message = "The username can only include uppercase and lowercase letters of the English alphabet and numbers")
+    @Pattern(regexp = "[a-zA-Z0-9]{2,30}", message = "The username can only include uppercase and lowercase letters of the English alphabet and numbers and length must be between 2 and 30 character")
     @ApiModelProperty(value = "A valid username", required = true, allowableValues = "NonEmpty String")
     private String username;
 

@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.catstack.auth.model.Session;
 import ru.catstack.auth.model.token.RefreshToken;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -14,6 +15,8 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     Optional<Session> findById(Long id);
 
     Optional<Session> findByUserId(Long userId);
+
+    List<Session> findAllByUserId(Long userId);
 
     @Transactional
     void deleteAllByUserId(Long id);

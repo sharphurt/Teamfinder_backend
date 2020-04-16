@@ -99,17 +99,11 @@ public class JwtTokenProvider {
         }
     }
 
-
-    @NotNull
-    private List<String> getRoleNames(List<Role> userRoles) {
-        List<String> result = new ArrayList<>();
-
-        userRoles.forEach(role -> result.add(role.getRole().name()));
-        return result;
-    }
-
     public Long getValidityDuration() {
         return validityInMilliseconds;
     }
 
+    public String getTokenPrefix() {
+        return tokenPrefix;
+    }
 }

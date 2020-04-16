@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.catstack.auth.exception.InvalidJwtTokenException;
 import ru.catstack.auth.exception.JwtAuthenticationException;
 import ru.catstack.auth.security.JwtUserDetailsService;
 import ru.catstack.auth.service.UserService;
@@ -45,7 +46,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
-            response.setHeader("123", "456");
+            throw new InvalidJwtTokenException("");
         }
 
         filterChain.doFilter(request, response);

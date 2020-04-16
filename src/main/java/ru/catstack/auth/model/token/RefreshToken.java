@@ -2,6 +2,7 @@ package ru.catstack.auth.model.token;
 
 import org.hibernate.annotations.NaturalId;
 import ru.catstack.auth.model.Session;
+import ru.catstack.auth.model.User;
 import ru.catstack.auth.model.audit.DateAudit;
 
 import javax.persistence.*;
@@ -24,6 +25,9 @@ public class RefreshToken extends DateAudit {
     @JoinColumn(name="session_id")
     private Session session;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     @Column(name = "refresh_count")
     private Long refreshCount;
 
@@ -33,15 +37,16 @@ public class RefreshToken extends DateAudit {
     public RefreshToken() {
     }
 
-    public RefreshToken(String token, Session userSession, Long refreshCount, Instant expiryDate) {
+    public RefreshToken(String token, Session userSession, Long userId, Long refreshCount, Instant expiryDate) {
         this.token = token;
         this.session = userSession;
+        this.userId = userSession.getUserId();
         this.refreshCount = refreshCount;
         this.expiryDate = expiryDate;
     }
 
     public void incrementRefreshCount() {
-        refreshCount = refreshCount + 1;
+        refreshCount =+ 1L;
     }
 
     public Long getId() {
@@ -62,5 +67,9 @@ public class RefreshToken extends DateAudit {
 
     public Long getRefreshCount() {
         return refreshCount;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 }

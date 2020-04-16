@@ -1,11 +1,9 @@
 package ru.catstack.auth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.ResourceAlreadyInUseException;
 import ru.catstack.auth.exception.TokenRefreshException;
@@ -21,7 +19,6 @@ import ru.catstack.auth.security.jwt.JwtTokenProvider;
 import ru.catstack.auth.security.jwt.JwtUser;
 
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @Service
 public class AuthService {
@@ -73,8 +70,6 @@ public class AuthService {
 
     public Optional<RefreshToken> createAndPersistRefreshTokenForSession(Authentication auth, LoginRequest loginRequest) {
         var user = (JwtUser) auth.getPrincipal();
-        if (sessionService.countAllByUserId(user.getId()) > 4)
-            sessionService.deleteAllByUserId(user.getId());
         if (sessionService.isDeviceAlreadyExists(loginRequest.getDeviceInfo()))
             throw new ResourceAlreadyInUseException("Device", "device id", loginRequest.getDeviceInfo().getDeviceId());
 
@@ -82,6 +77,11 @@ public class AuthService {
         var refreshToken = refreshTokenService.createRefreshToken(newSession);
         refreshToken = refreshTokenService.save(refreshToken);
         return Optional.ofNullable(refreshToken);
+    }
+
+    private void closeAllUserSessionsByUserId(Long id) {
+        refreshTokenService.deleteAllByUserId(id);
+        sessionService.deleteAllByUserId(id);
     }
 
     public Optional<String> refreshJwtToken(TokenRefreshRequest tokenRefreshRequest) {
