@@ -31,7 +31,8 @@ public class ImageController {
         var loggedUserId = userService.getLoggedInUser().get().getId();
         imageService.findByUserId(loggedUserId)
                 .ifPresent(img -> imageService.deleteByUserId(loggedUserId));
-        var image = new ImageModel(loggedUserId, Instant.now() + "_thumbnail", imageRequest.getCode());
+        var imageName = (Instant.now() + "_thumbnail").replaceAll("(\\W)", "_");
+        var image = new ImageModel(loggedUserId, imageName, imageRequest.getCode());
         imageService.save(image);
         userService.updateHasPictureById(loggedUserId, true);
         return new ApiResponse("Image was uploaded successfully");
