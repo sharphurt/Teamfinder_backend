@@ -171,11 +171,7 @@
                 <constraints nullable="false" unique="true"/>
             </column>
 
-            <column name="type" type="VARCHAR(10)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-
-            <column name="pic_bytes" type="IMAGE">
+            <column name="base64_code" type="IMAGE">
                 <constraints nullable="false" unique="false"/>
             </column>
         </createTable>

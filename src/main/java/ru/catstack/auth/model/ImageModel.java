@@ -19,20 +19,16 @@ public class ImageModel {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "type")
-    private String type;
-
-    @Column(name = "pic_bytes", length = 1000)
-    private byte[] picBytes;
+    @Column(name = "base64_code", length = 1000)
+    private String base64Code;
 
     public ImageModel() {
     }
 
-    public ImageModel(Long userId, String name, String type, byte[] pic) {
+    public ImageModel(Long userId, String name, String base64Code) {
         this.userId = userId;
         this.name = name;
-        this.type = type;
-        this.picBytes = pic;
+        this.base64Code = base64Code;
     }
 
     public Long getId() {
@@ -43,12 +39,8 @@ public class ImageModel {
         return name;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public byte[] getPicBytes() {
-        return picBytes;
+    public String getBase64Code() {
+        return base64Code;
     }
 
     public Long getUserId() {
