@@ -82,11 +82,11 @@ public class UserService {
         return token.map(jwtTokenProvider::getUserIdFromToken).orElseThrow(() -> new AccessDeniedException("Access denied"));
     }
 
-    public Optional<JwtUser> getLoggedInUser() {
+    public Optional<User> getLoggedInUser() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken))
-            return Optional.ofNullable((JwtUser) auth.getPrincipal());
-        return Optional.empty();
+        if (!auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken)
+            throw new AccessDeniedException("Unexpected error");
+        return findById(((JwtUser) auth.getPrincipal()).getId());
     }
 
 }

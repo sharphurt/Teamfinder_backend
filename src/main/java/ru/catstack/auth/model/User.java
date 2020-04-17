@@ -5,10 +5,10 @@ import org.hibernate.annotations.Cascade;
 import ru.catstack.auth.model.audit.DateAudit;
 
 import javax.persistence.*;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Set;
 
-@Entity(name = "User")
+@Entity
 @Table(name = "users")
 public class User extends DateAudit {
     @Id
@@ -47,7 +47,10 @@ public class User extends DateAudit {
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles = Set.of();
+
+    @ManyToMany(mappedBy = "members", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Team> teams;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -123,5 +126,9 @@ public class User extends DateAudit {
 
     public boolean isHasPicture() {
         return hasPicture;
+    }
+
+    public Set<Team> getTeams() {
+        return teams;
     }
 }

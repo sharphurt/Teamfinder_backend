@@ -1,21 +1,15 @@
 package ru.catstack.auth.security.jwt;
 
 import io.jsonwebtoken.*;
-import org.apache.el.stream.Optional;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.PropertyKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.catstack.auth.exception.JwtAuthenticationException;
-import ru.catstack.auth.model.Role;
 import ru.catstack.auth.model.User;
 import ru.catstack.auth.security.JwtUserDetailsService;
 

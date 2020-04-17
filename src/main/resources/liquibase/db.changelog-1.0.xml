@@ -171,7 +171,51 @@
                 <constraints nullable="false" unique="true"/>
             </column>
 
-            <column name="base64_code" type="IMAGE">
+            <column name="base64_code" type="VARCHAR(1000)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1.0.7" author="sharphurt">
+        <createTable tableName="teams">
+            <column name="team_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="team_name" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="description" type="VARCHAR(500)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+
+            <column name="pic" type="VARCHAR(1000)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(10)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+
+            <column name="created_at" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1.0.8" author="sharphurt">
+        <createTable tableName="teams_members">
+            <column name="team_id" type="BIGINT">
+                <constraints nullable="false" unique="false"/>
+            </column>
+
+            <column name="member_id" type="BIGINT">
                 <constraints nullable="false" unique="false"/>
             </column>
         </createTable>
