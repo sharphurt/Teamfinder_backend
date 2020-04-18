@@ -2,14 +2,19 @@ package ru.catstack.auth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.ResourceAlreadyInUseException;
+import ru.catstack.auth.model.Status;
 import ru.catstack.auth.model.Team;
 import ru.catstack.auth.model.User;
 import ru.catstack.auth.model.payload.request.TeamRegistrationRequest;
 import ru.catstack.auth.repository.TeamRepository;
+import ru.catstack.auth.util.OffsetBasedPage;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,9 +22,6 @@ import java.util.Set;
 public class TeamService {
     private final TeamRepository teamRepository;
     private final UserService userService;
-
-    @Value("{$app.teams.pages.size}")
-    private int pageSize;
 
     @Autowired
     TeamService(TeamRepository teamRepository, UserService userService) {
@@ -52,8 +54,16 @@ public class TeamService {
         return teamRepository.count();
     }
 
+    public Collection<Team> findByStatus(Status status, Pageable page) {
+        return teamRepository.findByStatus(status, page);
+    }
+
     private Team save(Team team) {
         return teamRepository.save(team);
+    }
+
+    public List<Team> getTeamsGap(int from, int count) {
+        return teamRepository.findAll(new OffsetBasedPage(from, count)).getContent();
     }
 
 }

@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
 @ApiModel(value = "Team card registration Request", description = "The team card registration request payload")
 public class TeamRegistrationRequest {
 
-    @NotBlank(message = "Username cannot be blank")
+    @NotBlank(message = "Team name cannot be blank")
     @Pattern(regexp = "[a-zA-Z0-9]{2,30}", message = "The team name can only include uppercase and lowercase letters of the English alphabet and numbers and length must be between 2 and 30 character")
     @ApiModelProperty(value = "A valid username", required = true, allowableValues = "NonEmpty String")
     private String name;

@@ -3,11 +3,16 @@ package ru.catstack.auth.controller;
 
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.catstack.auth.exception.TeamRegistrationException;
+import ru.catstack.auth.model.Status;
 import ru.catstack.auth.model.payload.request.TeamRegistrationRequest;
 import ru.catstack.auth.model.payload.response.ApiResponse;
 import ru.catstack.auth.service.TeamService;
+import ru.catstack.auth.util.OffsetBasedPage;
 
 import javax.validation.Valid;
 
@@ -29,8 +34,9 @@ public class TeamController {
                 .orElseThrow(() -> new TeamRegistrationException(request.getName(), "Unexpected error"));
     }
 
-    @GetMapping("/page/{page}")
-    public ApiResponse registerTeam(@PathVariable(value = "page") Long page) {
-        throw new NotYetImplementedException();
+    @GetMapping("/get")
+    public ApiResponse registerTeam(@RequestParam int from, @RequestParam int count) {
+        var teams = teamService.getTeamsGap(from, count);
+        return new ApiResponse(teams.toArray());
     }
 }
