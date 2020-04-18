@@ -49,6 +49,7 @@ public class User extends DateAudit {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private Set<Role> roles = Set.of();
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "members", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Team> teams;
 

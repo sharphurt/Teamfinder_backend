@@ -35,7 +35,7 @@ public class TeamController {
     }
 
     @GetMapping("/get")
-    public ApiResponse registerTeam(@RequestParam int from, @RequestParam int count) {
+    public ApiResponse getTeams(@RequestParam int from, @RequestParam int count) {
         var teams = teamService.getTeamsGap(from, count);
         return new ApiResponse(teams.toArray());
     }

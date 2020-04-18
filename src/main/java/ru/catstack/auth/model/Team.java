@@ -33,7 +33,6 @@ public class Team extends DateAudit {
             inverseJoinColumns = @JoinColumn(name = "member_id", referencedColumnName = "user_id"))
     private Set<User> members;
 
-
     public Team(String name, String description, Set<User> members, String picCode) {
         this.name = name;
         this.description = description;
