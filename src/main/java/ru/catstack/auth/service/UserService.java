@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.UserLogOutException;
 import ru.catstack.auth.model.Role;
+import ru.catstack.auth.model.RoleEnum;
 import ru.catstack.auth.model.Status;
 import ru.catstack.auth.model.User;
 import ru.catstack.auth.model.payload.request.LogOutRequest;
@@ -74,7 +75,7 @@ public class UserService {
     User createUser(RegistrationRequest registerRequest) {
         return new User(registerRequest.getEmail(), passwordEncoder.encode(registerRequest.getPassword()),
                 registerRequest.getUsername(), registerRequest.getFirstName(), registerRequest.getLastName(),
-                registerRequest.getAge(), false, Set.of(new Role()), Status.ACTIVE);
+                registerRequest.getAge(), false, Set.of(new Role(RoleEnum.ROLE_USER)), Status.ACTIVE);
     }
 
     public Long getUserIdFromRequest(HttpServletRequest request) {
