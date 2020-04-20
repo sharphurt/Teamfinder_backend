@@ -12,8 +12,6 @@ import ru.catstack.auth.model.payload.response.ApiResponse;
 import ru.catstack.auth.service.ImageService;
 import ru.catstack.auth.service.UserService;
 
-import static ru.catstack.auth.util.Util.*;
-
 @RestController
 @RequestMapping(value = "/api/image")
 public class ImageController {

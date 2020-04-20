@@ -15,8 +15,7 @@ public class Role {
 
     @Column(name = "name")
     @Enumerated(EnumType.STRING)
-    @NaturalId
-    private RoleEnum role = RoleEnum.ROLE_USER;
+    private RoleEnum role;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<User> users;

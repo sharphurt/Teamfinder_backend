@@ -1,11 +1,11 @@
 package ru.catstack.auth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.ResourceAlreadyInUseException;
+import ru.catstack.auth.model.Member;
 import ru.catstack.auth.model.Status;
 import ru.catstack.auth.model.Team;
 import ru.catstack.auth.model.User;
@@ -22,11 +22,13 @@ import java.util.Set;
 public class TeamService {
     private final TeamRepository teamRepository;
     private final UserService userService;
+    private final MemberService memberService;
 
     @Autowired
-    TeamService(TeamRepository teamRepository, UserService userService) {
+    TeamService(TeamRepository teamRepository, UserService userService, MemberService memberService) {
         this.teamRepository = teamRepository;
         this.userService = userService;
+        this.memberService = memberService;
     }
 
     public Optional<Team> registerTeam(TeamRegistrationRequest request) {
@@ -36,7 +38,7 @@ public class TeamService {
             throw new ResourceAlreadyInUseException("Team name", "value", name);
 
         return loggedInUser.map(me -> {
-            var newTeam = createTeam(me, request);
+            var newTeam = createTeam(request);
             var registeredTeam = save(newTeam);
             return Optional.ofNullable(registeredTeam);
         }).orElseThrow(() -> new AccessDeniedException("Unexpected error"));
@@ -46,8 +48,8 @@ public class TeamService {
         return teamRepository.existsByName(name);
     }
 
-    private Team createTeam(User me, TeamRegistrationRequest request) {
-        return new Team(request.getName(), request.getDescription(), Set.of(me), request.getPicCode());
+    private Team createTeam(TeamRegistrationRequest request) {
+        return new Team(request.getName(), request.getDescription(), Set.of(new Member(Set.of("Creator"))), request.getPicCode());
     }
 
     private long teamsCount() {
