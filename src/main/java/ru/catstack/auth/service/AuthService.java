@@ -70,9 +70,13 @@ public class AuthService {
 
     public Optional<RefreshToken> createAndPersistRefreshTokenForSession(Authentication auth, LoginRequest loginRequest) {
         var user = (JwtUser) auth.getPrincipal();
-        if (sessionService.isDeviceAlreadyExists(loginRequest.getDeviceInfo()))
-            throw new ResourceAlreadyInUseException("Device", "device id", loginRequest.getDeviceInfo().getDeviceId());
-
+        if (sessionService.isDeviceAlreadyExists(loginRequest.getDeviceInfo())) {
+            var session = sessionService.findByDeviceIdAndUserId(loginRequest.getDeviceInfo().getDeviceId(), user.getId());
+            session.ifPresent(sess -> {
+                refreshTokenService.deleteBySessionId(sess.getId());
+            //    sessionService.deleteByDeviceId(sess.getDeviceId());
+            });
+        }
         Session newSession = new Session(user.getId(), loginRequest.getDeviceInfo(), true);
         var refreshToken = refreshTokenService.createRefreshToken(newSession);
         refreshToken = refreshTokenService.save(refreshToken);
