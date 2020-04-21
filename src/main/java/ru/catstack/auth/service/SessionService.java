@@ -10,6 +10,7 @@ import ru.catstack.auth.model.token.RefreshToken;
 import ru.catstack.auth.repository.RefreshTokenRepository;
 import ru.catstack.auth.repository.SessionRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,6 +42,14 @@ public class SessionService {
             throw new TokenRefreshException(refreshToken.getToken(),
                     "Refresh blocked for the device. Please login through a different device");
         }
+    }
+
+    Optional<Session> findByDeviceIdAndUserId(String deviceId, Long userId) {
+        return sessionRepository.findByDeviceIdAndUserId(deviceId, userId);
+    }
+
+    void deleteById(Long userId) {
+        sessionRepository.deleteById(userId);
     }
 
     Byte countAllByUserId(Long id) {
