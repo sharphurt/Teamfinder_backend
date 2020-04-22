@@ -7,17 +7,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.catstack.auth.exception.UserLogOutException;
+import ru.catstack.auth.exception.ResourceAlreadyInUseException;
 import ru.catstack.auth.model.Role;
 import ru.catstack.auth.model.Status;
 import ru.catstack.auth.model.User;
-import ru.catstack.auth.model.payload.request.LogOutRequest;
 import ru.catstack.auth.model.payload.request.RegistrationRequest;
 import ru.catstack.auth.repository.UserRepository;
 import ru.catstack.auth.security.jwt.JwtTokenProvider;
 import ru.catstack.auth.security.jwt.JwtUser;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 
@@ -63,12 +63,9 @@ public class UserService {
         return userRepository.existsByUsername(username);
     }
 
-    void updateAboutMeById(Long id, String about) {
-        userRepository.setAboutMeById(id, about);
-    }
-
     public void updateHasPictureById(Long id, boolean hasPic) {
         userRepository.updateHasPictureById(id, hasPic);
+        setUpdatedAtById(id, Instant.now());
     }
 
     User createUser(RegistrationRequest registerRequest) {
@@ -79,7 +76,7 @@ public class UserService {
 
     public Long getUserIdFromRequest(HttpServletRequest request) {
         var token = Optional.of(jwtTokenProvider.resolveToken(request));
-        return token.map(jwtTokenProvider::getUserIdFromToken).orElseThrow(() -> new AccessDeniedException("Access denied"));
+        return token.map(jwtTokenProvider::getUserId).orElseThrow(() -> new AccessDeniedException("Access denied"));
     }
 
     public Optional<User> getLoggedInUser() {
@@ -89,4 +86,49 @@ public class UserService {
         return findById(((JwtUser) auth.getPrincipal()).getId());
     }
 
+
+    public String updateUsernameById(Long id, String username) {
+        if (existsByUsername(username))
+            throw new ResourceAlreadyInUseException("Username", "value", username);
+        userRepository.updateUsernameById(id, username);
+        setUpdatedAtById(id, Instant.now());
+        var updatedUser = userRepository.findById(id).get();
+        return jwtTokenProvider.createToken(updatedUser);
+    }
+
+    public void updateFirstNameById(Long id, String firstName) {
+        userRepository.updateFirstNameById(id, firstName);
+        setUpdatedAtById(id, Instant.now());
+    }
+
+    public void updateLastNameById(Long id, String lastName) {
+        userRepository.updateLastNameById(id, lastName);
+        setUpdatedAtById(id, Instant.now());
+    }
+
+    public void updateAgeById(Long id, Byte age) {
+        userRepository.updateAgeById(id, age);
+        setUpdatedAtById(id, Instant.now());
+    }
+
+    public void updateEmailById(Long id, String email) {
+        if (existsByEmail(email))
+            throw new ResourceAlreadyInUseException("Email", "value", email);
+        userRepository.updateEmailById(id, email);
+        setUpdatedAtById(id, Instant.now());
+    }
+
+    public void updatePasswordById(Long id, String password) {
+        userRepository.updatePasswordById(id, passwordEncoder.encode(password));
+        setUpdatedAtById(id, Instant.now());
+    }
+
+    public void updateAboutMeById(Long id, String aboutMe) {
+        userRepository.updateAboutMeById(id, aboutMe);
+        setUpdatedAtById(id, Instant.now());
+    }
+
+    private void setUpdatedAtById(Long id, Instant updatedAt) {
+        userRepository.setUpdatedAtById(id, updatedAt);
+    }
 }

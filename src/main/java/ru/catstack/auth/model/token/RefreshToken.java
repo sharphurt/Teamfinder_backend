@@ -21,7 +21,7 @@ public class RefreshToken extends DateAudit {
     @NaturalId(mutable = true)
     private String token;
 
-    @OneToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="session_id")
     private Session session;
 

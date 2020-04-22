@@ -30,4 +30,11 @@ public class JwtUserDetailsService implements UserDetailsService {
         return dbUser.map(JwtUserFactory::create)
                 .orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching user name in the database for " + username));
     }
+
+    public UserDetails loadById(long id) throws UsernameNotFoundException {
+        Optional<User> dbUser = userRepository.findById(id);
+        logger.info("Fetched user : " + dbUser + " by " + id);
+        return dbUser.map(JwtUserFactory::create)
+                .orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching user name in the database for " + id));
+    }
 }
