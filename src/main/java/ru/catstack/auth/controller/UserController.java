@@ -31,11 +31,10 @@ public class UserController {
     @GetMapping("profile")
     @PreAuthorize("hasRole('USER_ROLE')")
     public ApiResponse getUserProfile() {
-        var loggedUser = userService.getLoggedInUser();
-        return loggedUser.map(user -> {
-            var userProfileData = userService.findById(user.getId());
-            return new ApiResponse(userProfileData);
-        }).orElseThrow(() -> new AccessDeniedException("An unexpected error occurred while trying to get user data"));
+        var me = userService.getLoggedInUser();
+        var userProfileData = userService.findById(me.getId());
+        return new ApiResponse(userProfileData);
+
     }
 
 //    @PostMapping("/setAboutMe")
