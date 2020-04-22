@@ -216,7 +216,7 @@
             </column>
 
             <column name="roles" type="VARCHAR(100)">
-                <constraints nullable="false" unique="true"/>
+                <constraints nullable="false" unique="false"/>
             </column>
 
             <column name="created_at" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
@@ -236,6 +236,22 @@
             </column>
 
             <column name="member_id" type="BIGINT">
+                <constraints nullable="false" unique="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1.0.11" author="sharphurt">
+        <createTable tableName="applications">
+            <column name="application_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" unique="false"/>
+            </column>
+
+            <column name="team_id" type="BIGINT">
                 <constraints nullable="false" unique="false"/>
             </column>
         </createTable>

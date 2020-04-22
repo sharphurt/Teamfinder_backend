@@ -36,12 +36,9 @@ public class TeamService {
         var loggedInUser = userService.getLoggedInUser();
         if (nameAlreadyExists(name))
             throw new ResourceAlreadyInUseException("Team name", "value", name);
-
-        return loggedInUser.map(me -> {
-            var newTeam = createTeam(request);
-            var registeredTeam = save(newTeam);
-            return Optional.ofNullable(registeredTeam);
-        }).orElseThrow(() -> new AccessDeniedException("Unexpected error"));
+        var newTeam = createTeam(request);
+        var registeredTeam = save(newTeam);
+        return Optional.ofNullable(registeredTeam);
     }
 
     private boolean nameAlreadyExists(String name) {
@@ -56,8 +53,8 @@ public class TeamService {
         return teamRepository.count();
     }
 
-    public Collection<Team> findByStatus(Status status, Pageable page) {
-        return teamRepository.findByStatus(status, page);
+    Optional<Team> getTeamByTeamId(long teamId) {
+        return teamRepository.findById(teamId);
     }
 
     private Team save(Team team) {
