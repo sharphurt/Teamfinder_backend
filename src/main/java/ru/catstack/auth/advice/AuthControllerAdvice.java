@@ -166,4 +166,11 @@ public class AuthControllerAdvice extends ResponseEntityExceptionHandler {
         var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
         return new ApiResponse(response);
     }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    @ResponseBody
+    public ApiResponse handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
+    }
 }
