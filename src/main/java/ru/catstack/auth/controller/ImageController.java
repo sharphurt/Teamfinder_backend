@@ -26,7 +26,7 @@ public class ImageController {
 
     @PostMapping("upload")
     public ApiResponse uploadImage(@RequestBody ImageRequest imageRequest) {
-        var loggedUserId = userService.getLoggedInUser().get().getId();
+        var loggedUserId = userService.getLoggedInUser().getId();
         imageService.findByUserId(loggedUserId)
                 .ifPresent(img -> imageService.deleteByUserId(loggedUserId));
         var imageName = (Instant.now() + "_thumbnail").replaceAll("(\\W)", "_");
@@ -38,7 +38,7 @@ public class ImageController {
 
     @GetMapping("get")
     public ApiResponse getImage() {
-        var loggedUserId = userService.getLoggedInUser().get().getId();
+        var loggedUserId = userService.getLoggedInUser().getId();
         var retrievedImage = imageService.findByUserId(loggedUserId);
         return retrievedImage.map(img -> {
             var responseImg = new ImageModel(loggedUserId, img.getName(), img.getBase64Code());
@@ -48,7 +48,7 @@ public class ImageController {
 
     @GetMapping("delete")
     public ApiResponse deleteImage() {
-        var loggedUserId = userService.getLoggedInUser().get().getId();
+        var loggedUserId = userService.getLoggedInUser().getId();
         imageService.deleteByUserId(loggedUserId);
         userService.updateHasPictureById(loggedUserId, false);
         return new ApiResponse("Successfully deleted");

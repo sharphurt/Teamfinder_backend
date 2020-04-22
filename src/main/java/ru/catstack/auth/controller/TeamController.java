@@ -1,18 +1,15 @@
 package ru.catstack.auth.controller;
 
 
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
+import ru.catstack.auth.exception.ApplicationSendException;
+import ru.catstack.auth.exception.ResourceNotFoundException;
 import ru.catstack.auth.exception.TeamRegistrationException;
-import ru.catstack.auth.model.Status;
 import ru.catstack.auth.model.payload.request.TeamRegistrationRequest;
 import ru.catstack.auth.model.payload.response.ApiResponse;
+import ru.catstack.auth.service.ApplicationService;
 import ru.catstack.auth.service.TeamService;
-import ru.catstack.auth.util.OffsetBasedPage;
 
 import javax.validation.Valid;
 
@@ -21,10 +18,12 @@ import javax.validation.Valid;
 public class TeamController {
 
     private final TeamService teamService;
+    private final ApplicationService applicationService;
 
     @Autowired
-    public TeamController(TeamService teamService) {
+    public TeamController(TeamService teamService, ApplicationService applicationService) {
         this.teamService = teamService;
+        this.applicationService = applicationService;
     }
 
     @PostMapping("/register")
@@ -38,5 +37,18 @@ public class TeamController {
     public ApiResponse getTeams(@RequestParam int from, @RequestParam int count) {
         var teams = teamService.getTeamsGap(from, count);
         return new ApiResponse(teams.toArray());
+    }
+
+    @GetMapping("/sendApplication")
+    public ApiResponse sendApplication(@RequestParam long teamId) {
+        return applicationService.createApplication(teamId)
+                .map(application -> new ApiResponse("Application sent successfully"))
+                .orElseThrow(() -> new ApplicationSendException(teamId));
+    }
+
+    @GetMapping("/cancelApplication")
+    public ApiResponse cancelApplication(@RequestParam long teamId) {
+        applicationService.deleteApplication(teamId);
+        return new ApiResponse("Application deleted successfully");
     }
 }
