@@ -37,10 +37,15 @@ public class Team extends DateAudit {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private Set<Member> members = Set.of();
 
-    public Team(String name, String description, Set<Member> members, String picCode) {
+
+    @Column(name = "creator_id")
+    private long creatorId;
+
+    public Team(String name, String description, User creator, Set<Member> members, String picCode) {
         this.name = name;
         this.description = description;
         this.members = members;
+        this.creatorId = creator.getId();
         this.pic = picCode;
         this.status = Status.ACTIVE;
     }
@@ -95,5 +100,13 @@ public class Team extends DateAudit {
 
     public void setMembers(Set<Member> members) {
         this.members = members;
+    }
+
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
     }
 }

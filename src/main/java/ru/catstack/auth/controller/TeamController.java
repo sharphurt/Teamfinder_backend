@@ -39,6 +39,12 @@ public class TeamController {
         return new ApiResponse(teams.toArray());
     }
 
+    @GetMapping("/getApplications")
+    public ApiResponse getApplications(@RequestParam long teamId) {
+        var applications = applicationService.getApplicationsForTeam(teamId);
+        return new ApiResponse(applications);
+    }
+
     @GetMapping("/sendApplication")
     public ApiResponse sendApplication(@RequestParam long teamId) {
         return applicationService.createApplication(teamId)

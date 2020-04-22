@@ -1,8 +1,8 @@
 package ru.catstack.auth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import ru.catstack.auth.exception.AccessDeniedException;
 import ru.catstack.auth.exception.ApplicationAlreadySentException;
 import ru.catstack.auth.exception.ResourceNotFoundException;
 import ru.catstack.auth.exception.UserAlreadyInTeamException;
@@ -27,7 +27,7 @@ public class ApplicationService {
 
     public Optional<Application> createApplication(long teamId) {
         var me = userService.getLoggedInUser();
-        return teamService.getTeamByTeamId(teamId).map(team -> {
+        return teamService.getByTeamId(teamId).map(team -> {
             var application = new Application(me.getId(), team.getId());
             if (applicationExists(application))
                 throw new ApplicationAlreadySentException(me.getId(), team.getId());
@@ -42,16 +42,20 @@ public class ApplicationService {
         var me = userService.getLoggedInUser();
         if (applicationExists(new Application(me.getId(), teamId))) {
             applicationRepository.deleteByUserIdAndTeamId(me.getId(), teamId);
-        }
-        else
+        } else
             throw new ResourceNotFoundException("Application", "team id", teamId);
     }
 
-    public List<Application> getApplicationsForTeam(Long teamId) {
-        return applicationRepository.findAllByTeamId(teamId);
+    public List<Application> getApplicationsForTeam(long teamId) {
+        var me = userService.getLoggedInUser();
+        return teamService.getByTeamId(teamId).map(team -> {
+            if (team.getCreatorId() != me.getId())
+                throw new AccessDeniedException("You do not have permission to view the list of applications for this team.");
+            return applicationRepository.findAllByTeamId(teamId);
+        }).orElseThrow(() -> new ResourceNotFoundException("Team", "team id", teamId));
     }
 
-    public List<Application> getApplicationsForUser(Long userId) {
+    public List<Application> getApplicationsForUser(long userId) {
         return applicationRepository.findAllByTeamId(userId);
     }
 

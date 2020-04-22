@@ -33,10 +33,10 @@ public class TeamService {
 
     public Optional<Team> registerTeam(TeamRegistrationRequest request) {
         var name = request.getName();
-        var loggedInUser = userService.getLoggedInUser();
+        var me = userService.getLoggedInUser();
         if (nameAlreadyExists(name))
             throw new ResourceAlreadyInUseException("Team name", "value", name);
-        var newTeam = createTeam(request);
+        var newTeam = createTeam(me, request);
         var registeredTeam = save(newTeam);
         return Optional.ofNullable(registeredTeam);
     }
@@ -45,15 +45,15 @@ public class TeamService {
         return teamRepository.existsByName(name);
     }
 
-    private Team createTeam(TeamRegistrationRequest request) {
-        return new Team(request.getName(), request.getDescription(), Set.of(new Member(Set.of("Creator"))), request.getPicCode());
+    private Team createTeam(User creator, TeamRegistrationRequest request) {
+        return new Team(request.getName(), request.getDescription(), creator, Set.of(new Member(Set.of("Creator"))), request.getPicCode());
     }
 
     private long teamsCount() {
         return teamRepository.count();
     }
 
-    Optional<Team> getTeamByTeamId(long teamId) {
+    Optional<Team> getByTeamId(long teamId) {
         return teamRepository.findById(teamId);
     }
 
