@@ -4,16 +4,12 @@ import java.io.IOException;
 import java.time.Instant;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import ru.catstack.auth.exception.ResourceNotFoundException;
 import ru.catstack.auth.model.ImageModel;
 import ru.catstack.auth.model.payload.request.ImageRequest;
 import ru.catstack.auth.model.payload.response.ApiResponse;
 import ru.catstack.auth.service.ImageService;
 import ru.catstack.auth.service.UserService;
-
-import javax.websocket.server.PathParam;
-import static ru.catstack.auth.util.Util.*;
 
 @RestController
 @RequestMapping(value = "/api/image")
@@ -54,7 +50,7 @@ public class ImageController {
     @GetMapping("myImage")
     public ApiResponse getMyImage() {
         var me = userService.getLoggedInUser();
-        return me.map(logged -> getImage(logged.getId())).orElseThrow();
+        return getImage(me.getId());
     }
 
 
