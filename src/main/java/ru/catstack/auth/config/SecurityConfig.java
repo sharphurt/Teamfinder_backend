@@ -59,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(SET_USER_INFORMATION_ENDPOINT).authenticated()
                 .antMatchers(LOGOUT_ENDPOINT).authenticated()
                 .antMatchers(UPLOAD_IMAGE_ENDPOINT).authenticated()
-                .antMatchers(GET_IMAGE_ENDPOINT).authenticated()
+                .antMatchers(GET_IMAGE_ENDPOINT).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider))

@@ -125,7 +125,7 @@ public class User extends DateAudit {
         return aboutMe;
     }
 
-    public boolean isHasPicture() {
+    public boolean getPictureAvailability() {
         return hasPicture;
     }
 

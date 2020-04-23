@@ -70,9 +70,10 @@ public class AuthService {
 
     public Optional<RefreshToken> createAndPersistRefreshTokenForSession(Authentication auth, LoginRequest loginRequest) {
         var user = (JwtUser) auth.getPrincipal();
-        if (sessionService.isDeviceAlreadyExists(loginRequest.getDeviceInfo()))
-            throw new ResourceAlreadyInUseException("Device", "device id", loginRequest.getDeviceInfo().getDeviceId());
-
+        if (sessionService.isDeviceAlreadyExists(loginRequest.getDeviceInfo())) {
+            var session = sessionService.findByDeviceIdAndUserId(loginRequest.getDeviceInfo().getDeviceId(), user.getId());
+            session.ifPresent(sess -> refreshTokenService.deleteBySessionId(sess.getId()));
+        }
         Session newSession = new Session(user.getId(), loginRequest.getDeviceInfo(), true);
         var refreshToken = refreshTokenService.createRefreshToken(newSession);
         refreshToken = refreshTokenService.save(refreshToken);
@@ -85,21 +86,19 @@ public class AuthService {
     }
 
     public Optional<String> refreshJwtToken(TokenRefreshRequest tokenRefreshRequest) {
-        return Optional.of(refreshTokenService.findByToken(tokenRefreshRequest.getRefreshToken())
-                .map(refreshToken -> {
-                    refreshTokenService.verifyDevice(refreshToken, tokenRefreshRequest);
-                    refreshTokenService.verifyExpiration(refreshToken);
-                    sessionService.verifyRefreshAvailability(refreshToken);
-                    refreshTokenService.increaseCount(refreshToken);
-                    return refreshToken;
-                })
-                .map(RefreshToken::getUserSession)
-                .map(user -> {
-                    var userById = userService.findById(user.getId());
-                    return userById.get();
-                })
-                .map(this::generateToken))
-                .orElseThrow(() -> new TokenRefreshException(tokenRefreshRequest.getRefreshToken(), "Missing refresh token in database. Please login again"));
+        var token = refreshTokenService.findByToken(tokenRefreshRequest.getRefreshToken());
+        if (token.isPresent()) {
+            var refreshToken = token.get();
+            refreshTokenService.verifyDevice(refreshToken, tokenRefreshRequest);
+            refreshTokenService.verifyExpiration(refreshToken);
+            sessionService.verifyRefreshAvailability(refreshToken);
+            refreshTokenService.increaseCount(refreshToken);
+            var session = refreshToken.getUserSession();
+            var user = userService.findById(session.getUserId());
+            var newToken = generateToken(user.get());
+            return Optional.of(newToken);
+        }
+        throw new TokenRefreshException(tokenRefreshRequest.getRefreshToken(), "Missing refresh token in database. Please login again");
     }
 
     public void logoutUser(LogOutRequest logOutRequest) {

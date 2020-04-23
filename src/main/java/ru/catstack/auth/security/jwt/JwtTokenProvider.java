@@ -12,14 +12,15 @@ import org.springframework.stereotype.Component;
 import ru.catstack.auth.exception.JwtAuthenticationException;
 import ru.catstack.auth.model.User;
 import ru.catstack.auth.security.JwtUserDetailsService;
+import ru.catstack.auth.service.UserService;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
+import java.util.function.Function;
 
 @Component
 public class JwtTokenProvider {
@@ -56,7 +57,7 @@ public class JwtTokenProvider {
         Instant expiryDate = Instant.now().plusMillis(validityInMilliseconds);
         return Jwts.builder()
                 .setId(Long.toString(user.getId()))
-                .setSubject(user.getUsername())
+                .setSubject(Arrays.toString(user.getRoles().toArray()))
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .signWith(SignatureAlgorithm.HS512, secret)
@@ -64,15 +65,11 @@ public class JwtTokenProvider {
     }
 
     Authentication getAuthentication(String token) {
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
+        var userDetails = userDetailsService.loadById(getUserId(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    private String getUsername(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
-    }
-
-    public Long getUserIdFromToken(String token) {
+    public Long getUserId(String token) {
         return Long.parseLong(Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getId());
     }
 

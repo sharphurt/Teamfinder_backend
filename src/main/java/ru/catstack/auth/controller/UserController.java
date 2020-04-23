@@ -36,17 +36,5 @@ public class UserController {
         return new ApiResponse(userProfileData);
 
     }
-
-//    @PostMapping("/setAboutMe")
-//    @PreAuthorize("hasRole('USER_ROLE')")
-//    public ResponseEntity setAboutMe(@Valid @RequestBody SetUserInfoRequest userInfoRequest) {
-//        var loggedUser = getLoggedInUser();
-//        return loggedUser.map(user -> {
-//            var userProfileData = new UserProfileData(user.getId(), userInfoRequest.getAboutMe());
-//            UserProfileData savedData = userProfileDataService.save(userProfileData);
-//            return ResponseEntity.ok(new ApiSuccessResponse(true, "Information saved successfully"));
-//        }).orElseThrow(() -> new AccessDeniedException("Access denied for unauthenticated user"));
-//    }
-
 }
 

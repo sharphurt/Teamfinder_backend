@@ -12,6 +12,9 @@ import ru.catstack.auth.model.payload.response.ApiResponse;
 import ru.catstack.auth.service.ImageService;
 import ru.catstack.auth.service.UserService;
 
+import javax.websocket.server.PathParam;
+import static ru.catstack.auth.util.Util.*;
+
 @RestController
 @RequestMapping(value = "/api/image")
 public class ImageController {
@@ -37,14 +40,23 @@ public class ImageController {
     }
 
     @GetMapping("get")
-    public ApiResponse getImage() {
-        var loggedUserId = userService.getLoggedInUser().getId();
-        var retrievedImage = imageService.findByUserId(loggedUserId);
-        return retrievedImage.map(img -> {
-            var responseImg = new ImageModel(loggedUserId, img.getName(), img.getBase64Code());
-            return new ApiResponse(responseImg);
-        }).orElseThrow(() -> new ResourceNotFoundException("Image", "user id", loggedUserId));
+    public ApiResponse getImage(@RequestParam Long id) {
+        var requestedUser = userService.findById(id);
+        return requestedUser.map(user -> {
+            var retrievedImage = imageService.findByUserId(id);
+            return retrievedImage.map(img -> {
+                var responseImg = new ImageModel(id, img.getName(), img.getBase64Code());
+                return new ApiResponse(responseImg);
+            }).orElseThrow(() -> new ResourceNotFoundException("Avatar", "user id", id));
+        }).orElseThrow(() -> new ResourceNotFoundException("Avatar", "user id", id));
     }
+
+    @GetMapping("myImage")
+    public ApiResponse getMyImage() {
+        var me = userService.getLoggedInUser();
+        return me.map(logged -> getImage(logged.getId())).orElseThrow();
+    }
+
 
     @GetMapping("delete")
     public ApiResponse deleteImage() {
