@@ -18,6 +18,7 @@ import ru.catstack.auth.security.jwt.JwtTokenProvider;
 import ru.catstack.auth.security.jwt.JwtUser;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
@@ -70,9 +71,10 @@ public class UserService {
     }
 
     User createUser(RegistrationRequest registerRequest) {
+        var rolesSet = new HashSet<>(Set.of(new Role(RoleEnum.ROLE_USER)));
         return new User(registerRequest.getEmail(), passwordEncoder.encode(registerRequest.getPassword()),
                 registerRequest.getUsername(), registerRequest.getFirstName(), registerRequest.getLastName(),
-                registerRequest.getAge(), false, Set.of(new Role(RoleEnum.ROLE_USER)), Status.ACTIVE);
+                registerRequest.getAge(), false, rolesSet, Status.ACTIVE);
     }
 
     public Long getUserIdFromRequest(HttpServletRequest request) {
@@ -80,11 +82,12 @@ public class UserService {
         return token.map(jwtTokenProvider::getUserId).orElseThrow(() -> new AccessDeniedException("Access denied"));
     }
 
-    public Optional<User> getLoggedInUser() {
+    public User getLoggedInUser() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken)
             throw new AccessDeniedException("Unexpected error");
-        return findById(((JwtUser) auth.getPrincipal()).getId());
+        return findById(((JwtUser) auth.getPrincipal()).getId())
+                .orElseThrow(() -> new AccessDeniedException("An unexpected error occurred while trying to get user data"));
     }
 
 
