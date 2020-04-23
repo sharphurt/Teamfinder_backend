@@ -145,4 +145,32 @@ public class AuthControllerAdvice extends ResponseEntityExceptionHandler {
         var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
         return new ApiResponse(response);
     }
+
+    @ExceptionHandler(value = ApplicationAlreadySentException.class)
+    @ResponseBody
+    public ApiResponse handleApplicationAlreadySentException(ApplicationAlreadySentException ex, WebRequest request) {
+        var response = new ApiErrorResponse(ex.getMessage(), 226, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
+    }
+
+    @ExceptionHandler(value = UserAlreadyInTeamException.class)
+    @ResponseBody
+    public ApiResponse handleUserAlreadyInTeamException(UserAlreadyInTeamException ex, WebRequest request) {
+        var response = new ApiErrorResponse(ex.getMessage(), 226, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
+    }
+
+    @ExceptionHandler(value = ApplicationSendException.class)
+    @ResponseBody
+    public ApiResponse handleApplicationSendException(ApplicationSendException ex, WebRequest request) {
+        var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    @ResponseBody
+    public ApiResponse handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
+        return new ApiResponse(response);
+    }
 }

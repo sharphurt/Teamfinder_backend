@@ -102,16 +102,13 @@ public class AuthService {
     }
 
     public void logoutUser(LogOutRequest logOutRequest) {
-        var currentUser = userService.getLoggedInUser();
+        var me = userService.getLoggedInUser();
         var deviceId = logOutRequest.getDeviceInfo().getDeviceId();
-        currentUser.map(user -> {
-            var session = sessionService.findByUserId(user.getId())
-                    .filter(device -> device.getDeviceId().equals(deviceId))
-                    .orElseThrow(() -> new UserLogOutException(deviceId, "Invalid device Id supplied. No matching session found for the given user"));
-            refreshTokenService.deleteBySessionId(session.getId());
-            sessionService.deleteByDeviceId(deviceId);
-            return true;
-        }).orElseThrow(() -> new UserLogOutException(deviceId, "User is not logged in"));
+        var session = sessionService.findByUserId(me.getId())
+                .filter(device -> device.getDeviceId().equals(deviceId))
+                .orElseThrow(() -> new UserLogOutException(deviceId, "Invalid device Id supplied. No matching session found for the given user"));
+        refreshTokenService.deleteBySessionId(session.getId());
+        sessionService.deleteByDeviceId(deviceId);
     }
 
 }

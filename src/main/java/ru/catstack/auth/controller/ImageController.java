@@ -13,7 +13,6 @@ import ru.catstack.auth.service.ImageService;
 import ru.catstack.auth.service.UserService;
 
 import javax.websocket.server.PathParam;
-
 import static ru.catstack.auth.util.Util.*;
 
 @RestController
@@ -30,7 +29,7 @@ public class ImageController {
 
     @PostMapping("upload")
     public ApiResponse uploadImage(@RequestBody ImageRequest imageRequest) {
-        var loggedUserId = userService.getLoggedInUser().get().getId();
+        var loggedUserId = userService.getLoggedInUser().getId();
         imageService.findByUserId(loggedUserId)
                 .ifPresent(img -> imageService.deleteByUserId(loggedUserId));
         var imageName = (Instant.now() + "_thumbnail").replaceAll("(\\W)", "_");
@@ -61,7 +60,7 @@ public class ImageController {
 
     @GetMapping("delete")
     public ApiResponse deleteImage() {
-        var loggedUserId = userService.getLoggedInUser().get().getId();
+        var loggedUserId = userService.getLoggedInUser().getId();
         imageService.deleteByUserId(loggedUserId);
         userService.updateHasPictureById(loggedUserId, false);
         return new ApiResponse("Successfully deleted");
