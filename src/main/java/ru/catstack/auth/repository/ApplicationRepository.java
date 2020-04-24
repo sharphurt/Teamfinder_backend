@@ -16,5 +16,10 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     @Transactional
     void deleteByUserIdAndTeamId(long userId, long teamId);
 
+    @Transactional
+    void deleteAllByTeamId(long teamId);
+
+    long countAllByTeamId(long teamId);
+
     List<Application> findAllByUserId(long userId);
 }

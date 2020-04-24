@@ -15,59 +15,36 @@ import ru.catstack.auth.service.TeamService;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/api/teams/")
-public class TeamController {
+@RequestMapping(value = "/api/applications/")
+public class ApplicationController {
 
-    private final TeamService teamService;
-    private final MemberService memberService;
     private final ApplicationService applicationService;
 
     @Autowired
-    public TeamController(TeamService teamService, MemberService memberService, ApplicationService applicationService) {
-        this.teamService = teamService;
-        this.memberService = memberService;
+    public ApplicationController(ApplicationService applicationService) {
         this.applicationService = applicationService;
     }
 
-    @PostMapping("/register")
-    public ApiResponse registerTeam(@Valid @RequestBody TeamRegistrationRequest request) {
-        return teamService.registerTeam(request)
-                .map(team -> new ApiResponse("Team created successfully"))
-                .orElseThrow(() -> new TeamRegistrationException(request.getName(), "Unexpected error"));
-    }
-
     @GetMapping("/get")
-    public ApiResponse getTeams(@RequestParam int from, @RequestParam int count) {
-        var teams = teamService.getTeamsGap(from, count);
-        return new ApiResponse(teams.toArray());
-    }
-
-    @PostMapping("/addRole")
-    public ApiResponse addRole(@Valid @RequestBody AddRoleRequest request) {
-        memberService.addRole(request.getMemberId(), request.getRole());
-        return new ApiResponse("Role added successfully");
-    }
-
-    @GetMapping("/getApplications")
     public ApiResponse getApplications(@RequestParam long teamId) {
         var applications = applicationService.getApplicationsForTeam(teamId);
         return new ApiResponse(applications);
     }
 
-    @GetMapping("/sendApplication")
+    @GetMapping("/send")
     public ApiResponse sendApplication(@RequestParam long teamId) {
         return applicationService.createApplication(teamId)
                 .map(application -> new ApiResponse("Application sent successfully"))
                 .orElseThrow(() -> new ApplicationSendException(teamId));
     }
 
-    @GetMapping("/cancelApplication")
+    @GetMapping("/cancel")
     public ApiResponse cancelApplication(@RequestParam long teamId) {
         applicationService.deleteApplication(teamId);
         return new ApiResponse("Application deleted successfully");
     }
 
-    @GetMapping("/clearApplications")
+    @GetMapping("/clear")
     public ApiResponse clearApplications(@RequestParam long teamId) {
         applicationService.clearApplications(teamId);
         return new ApiResponse("Application deleted successfully");

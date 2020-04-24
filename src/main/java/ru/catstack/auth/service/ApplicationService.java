@@ -46,7 +46,7 @@ public class ApplicationService {
 
     private boolean isMemberAlreadyInTeam(Team team, User user) {
         var members = team.getMembers();
-        for (var member: members) {
+        for (var member : members) {
             if (member.getUser().getId().equals(user.getId()))
                 return true;
         }
@@ -64,10 +64,27 @@ public class ApplicationService {
     public List<Application> getApplicationsForTeam(long teamId) {
         var me = userService.getLoggedInUser();
         return teamService.getByTeamId(teamId).map(team -> {
-            if (!team.getCreator().getUser().getId().equals(me.getId()))
+            if (!isUserCreatedTeam(me, team))
                 throw new AccessDeniedException("You do not have permission to view the list of applications for this team.");
             return applicationRepository.findAllByTeamId(teamId);
         }).orElseThrow(() -> new ResourceNotFoundException("Team", "team id", teamId));
+    }
+
+    private boolean isUserCreatedTeam(User user, Team team) {
+        return team.getCreator().getUser().getId().equals(user.getId());
+    }
+
+    public void clearApplications(long teamId) {
+        var me = userService.getLoggedInUser();
+        teamService.getByTeamId(teamId).ifPresentOrElse(team -> {
+            if (!isUserCreatedTeam(me, team))
+                throw new AccessDeniedException("You do not have permission to view the list of applications for this team.");
+            if (applicationRepository.countAllByTeamId(teamId) == 0)
+                throw new ResourceNotFoundException("No team applications found");
+            applicationRepository.deleteAllByTeamId(teamId);
+        }, () -> {
+            throw new ResourceNotFoundException("Team", "team id", teamId);
+        });
     }
 
     public List<Application> getApplicationsForUser(long userId) {
