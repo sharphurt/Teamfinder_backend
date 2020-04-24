@@ -31,6 +31,7 @@ public class Member extends DateAudit {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "members", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Team> teams;
 

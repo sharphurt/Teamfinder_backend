@@ -43,7 +43,9 @@ public class TeamService {
 
     private Team createTeam(User creator, TeamRegistrationRequest request) {
         var creatorMember = memberService.createMember(creator, Set.of(new Role("CREATOR")));
-        return save(new Team(request.getName(), request.getDescription(), creatorMember, request.getPicCode()));
+        var team = new Team(request.getName(), request.getDescription(), creatorMember, request.getPicCode());
+        team.addMember(creatorMember);
+        return save(team);
     }
 
     private long teamsCount() {

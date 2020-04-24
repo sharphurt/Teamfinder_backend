@@ -6,6 +6,7 @@ import ru.catstack.auth.model.Role;
 import ru.catstack.auth.repository.RoleRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoleService {
@@ -21,4 +22,7 @@ public class RoleService {
         return roleRepository.findAll();
     }
 
+    public Optional<Role> findById(long roleId) {
+        return roleRepository.findById(roleId);
+    }
 }

@@ -7,7 +7,6 @@ import javax.validation.constraints.NotBlank;
 
 @ApiModel(value = "Adding role request")
 public class AddRoleRequest {
-    @NotBlank(message = "Member id cannot be blank")
     @ApiModelProperty(value = "Member id")
     private long memberId;
 
@@ -18,8 +17,7 @@ public class AddRoleRequest {
     AddRoleRequest() {
     }
 
-    AddRoleRequest(@NotBlank(message = "Member id cannot be blank") long memberId,
-                   @NotBlank(message = "New role cannot be blank") String role) {
+    AddRoleRequest(long memberId, @NotBlank(message = "New role cannot be blank") String role) {
         this.memberId = memberId;
         this.role = role;
     }
