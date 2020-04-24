@@ -41,17 +41,8 @@ public class User extends DateAudit {
     @Column(name = "has_picture")
     private boolean hasPicture;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private Set<Role> roles = Set.of();
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "members", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Team> teams;
+    @Column(name = "role")
+    private String role;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -61,14 +52,14 @@ public class User extends DateAudit {
     }
 
     public User(String email, String password, String username, String firstName,
-                String lastName, Byte age, boolean hasPicture, Set<Role> roles, Status status) {
+                String lastName, Byte age, boolean hasPicture, String role, Status status) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
-        this.roles = roles;
+        this.role = role;
         this.status = status;
         this.hasPicture = hasPicture;
     }
@@ -101,8 +92,8 @@ public class User extends DateAudit {
         return password;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public String getRoles() {
+        return role;
     }
 
     public Status getStatus() {
@@ -127,9 +118,5 @@ public class User extends DateAudit {
 
     public boolean getPictureAvailability() {
         return hasPicture;
-    }
-
-    public Set<Team> getTeams() {
-        return teams;
     }
 }

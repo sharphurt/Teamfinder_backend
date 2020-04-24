@@ -1,44 +1,46 @@
 package ru.catstack.auth.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-public class Role {
+public class Role implements Serializable {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "role_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name")
-    @Enumerated(EnumType.STRING)
-    private RoleEnum role;
+    private String role;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<User> users;
+    private Set<Member> members;
 
-    public Role(RoleEnum role) {
+    public Role(String role) {
         this.role = role;
     }
 
     public Role() {    }
 
-    public boolean isAdminRole() {
-        return this.role.equals(RoleEnum.ROLE_ADMIN);
-    }
-
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getRole() {
+        return role;
     }
 
-    public RoleEnum getRole() {
-        return role;
+    public Set<Member> getMembers() {
+        return members;
+    }
+
+    public void setMembers(Set<Member> members) {
+        this.members = members;
     }
 }

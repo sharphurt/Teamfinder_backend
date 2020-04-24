@@ -1,19 +1,16 @@
 package ru.catstack.auth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.ResourceAlreadyInUseException;
 import ru.catstack.auth.model.Member;
-import ru.catstack.auth.model.Status;
+import ru.catstack.auth.model.Role;
 import ru.catstack.auth.model.Team;
 import ru.catstack.auth.model.User;
 import ru.catstack.auth.model.payload.request.TeamRegistrationRequest;
 import ru.catstack.auth.repository.TeamRepository;
 import ru.catstack.auth.util.OffsetBasedPage;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,9 +33,8 @@ public class TeamService {
         var me = userService.getLoggedInUser();
         if (nameAlreadyExists(name))
             throw new ResourceAlreadyInUseException("Team name", "value", name);
-        var newTeam = createTeam(me, request);
-        var registeredTeam = save(newTeam);
-        return Optional.ofNullable(registeredTeam);
+        var createdTeam = createTeam(me, request);
+        return Optional.ofNullable(createdTeam);
     }
 
     private boolean nameAlreadyExists(String name) {
@@ -46,7 +42,8 @@ public class TeamService {
     }
 
     private Team createTeam(User creator, TeamRegistrationRequest request) {
-        return new Team(request.getName(), request.getDescription(), creator, Set.of(new Member(Set.of("Creator"))), request.getPicCode());
+        var creatorMember = memberService.createMember(creator, Set.of(new Role("CREATOR")));
+        return save(new Team(request.getName(), request.getDescription(), creatorMember, request.getPicCode()));
     }
 
     private long teamsCount() {

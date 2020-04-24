@@ -1,15 +1,13 @@
 package ru.catstack.auth.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.hibernate.annotations.Cascade;
+import ru.catstack.auth.exception.ResourceAlreadyInUseException;
 import ru.catstack.auth.model.audit.DateAudit;
 
 import javax.persistence.*;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,40 +20,54 @@ public class Member extends DateAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "roles")
-    private String roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "members_roles",
+            joinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")})
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private Set<Role> roles;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private User user;
 
     @ManyToMany(mappedBy = "members", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Team> teams;
 
-    public Member(Set<String> roles) {
-        setRoles(roles);
+    public Member(User user, Set<Role> roles) {
+        this.user = user;
+        this.roles = roles;
     }
 
     public Member() {
 
     }
 
-    public Set<String> getRoles() {
-        var gson = new Gson();
-        var type = new TypeToken<HashSet<String>>(){}.getType();
-        return gson.fromJson(this.roles, type);
-    }
-
-    public void setRoles(Set<String> roles) {
-        var gson = new Gson();
-        this.roles = gson.toJson(roles);
+    public Set<Role> getRoles() {
+        return this.roles;
     }
 
     public Set<Team> getTeams() {
         return teams;
     }
 
-    public void setTeam(Set<Team> teams) {
-        this.teams = teams;
-    }
-
     public Long getId() {
         return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void addRole(String role) {
+        this.roles.add(new Role(role));
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public void setTeams(Set<Team> teams) {
+        this.teams = teams;
     }
 }

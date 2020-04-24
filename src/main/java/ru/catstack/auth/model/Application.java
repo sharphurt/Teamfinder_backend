@@ -1,5 +1,7 @@
 package ru.catstack.auth.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -13,6 +15,7 @@ public class Application {
     @Column(name = "user_id")
     private long userId;
 
+    @JsonIgnore
     @Column(name = "team_id")
     private long teamId;
 

@@ -64,7 +64,7 @@
     <changeSet id="1.0.1" author="sharphurt">
         <!--Roles table-->
         <createTable tableName="roles">
-            <column name="id" type="BIGINT" autoIncrement="true">
+            <column name="role_id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
@@ -146,8 +146,8 @@
     </changeSet>
 
     <changeSet id="1.0.5" author="sharphurt">
-        <createTable tableName="users_roles">
-            <column name="user_id" type="BIGINT">
+        <createTable tableName="members_roles">
+            <column name="member_id" type="BIGINT">
                 <constraints nullable="false" unique="false"/>
             </column>
 
@@ -191,7 +191,7 @@
                 <constraints nullable="false" unique="false"/>
             </column>
 
-            <column name="creator_id" type="BIGINT">
+            <column name="creator_member_id" type="BIGINT">
                 <constraints nullable="false" unique="false"/>
             </column>
 
@@ -219,7 +219,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="roles" type="VARCHAR(100)">
+            <column name="user_id" type="BIGINT">
                 <constraints nullable="false" unique="false"/>
             </column>
 

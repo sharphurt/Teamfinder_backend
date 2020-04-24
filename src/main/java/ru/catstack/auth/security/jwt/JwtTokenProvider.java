@@ -57,7 +57,7 @@ public class JwtTokenProvider {
         Instant expiryDate = Instant.now().plusMillis(validityInMilliseconds);
         return Jwts.builder()
                 .setId(Long.toString(user.getId()))
-                .setSubject(Arrays.toString(user.getRoles().toArray()))
+                .setSubject(user.getRoles())
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .signWith(SignatureAlgorithm.HS512, secret)

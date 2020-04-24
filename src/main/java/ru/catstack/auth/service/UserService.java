@@ -71,10 +71,9 @@ public class UserService {
     }
 
     User createUser(RegistrationRequest registerRequest) {
-        var rolesSet = new HashSet<>(Set.of(new Role(RoleEnum.ROLE_USER)));
         return new User(registerRequest.getEmail(), passwordEncoder.encode(registerRequest.getPassword()),
                 registerRequest.getUsername(), registerRequest.getFirstName(), registerRequest.getLastName(),
-                registerRequest.getAge(), false, rolesSet, Status.ACTIVE);
+                registerRequest.getAge(), false, "ROLE_USER", Status.ACTIVE);
     }
 
     public Long getUserIdFromRequest(HttpServletRequest request) {

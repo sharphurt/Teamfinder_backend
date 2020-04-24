@@ -4,11 +4,12 @@ package ru.catstack.auth.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.catstack.auth.exception.ApplicationSendException;
-import ru.catstack.auth.exception.ResourceNotFoundException;
 import ru.catstack.auth.exception.TeamRegistrationException;
+import ru.catstack.auth.model.payload.request.AddRoleRequest;
 import ru.catstack.auth.model.payload.request.TeamRegistrationRequest;
 import ru.catstack.auth.model.payload.response.ApiResponse;
 import ru.catstack.auth.service.ApplicationService;
+import ru.catstack.auth.service.MemberService;
 import ru.catstack.auth.service.TeamService;
 
 import javax.validation.Valid;
@@ -18,11 +19,13 @@ import javax.validation.Valid;
 public class TeamController {
 
     private final TeamService teamService;
+    private final MemberService memberService;
     private final ApplicationService applicationService;
 
     @Autowired
-    public TeamController(TeamService teamService, ApplicationService applicationService) {
+    public TeamController(TeamService teamService, MemberService memberService, ApplicationService applicationService) {
         this.teamService = teamService;
+        this.memberService = memberService;
         this.applicationService = applicationService;
     }
 
@@ -37,6 +40,12 @@ public class TeamController {
     public ApiResponse getTeams(@RequestParam int from, @RequestParam int count) {
         var teams = teamService.getTeamsGap(from, count);
         return new ApiResponse(teams.toArray());
+    }
+
+    @PostMapping("/addRole")
+    public ApiResponse addRole(@Valid @RequestBody AddRoleRequest request) {
+        memberService.addRole(request.getMemberId(), request.getRole());
+        return new ApiResponse("Role added successfully");
     }
 
     @GetMapping("/getApplications")

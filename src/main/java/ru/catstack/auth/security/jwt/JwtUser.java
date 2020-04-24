@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class JwtUser implements UserDetails {
     private final Long id;
@@ -20,10 +21,10 @@ public class JwtUser implements UserDetails {
     private final String email;
     private final boolean enabled;
     private final Instant lastPasswordResetDate;
-    private final Collection<? extends GrantedAuthority> authorities;
+    private final GrantedAuthority authorities;
 
     JwtUser(Long id, String username, String firstName, String lastName, Byte age, String email, String password,
-            Collection<? extends GrantedAuthority> authorities, boolean enabled, Instant lastPasswordResetDate) {
+            GrantedAuthority authority, boolean enabled, Instant lastPasswordResetDate) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
@@ -31,7 +32,7 @@ public class JwtUser implements UserDetails {
         this.age = age;
         this.email = email;
         this.password = password;
-        this.authorities = authorities;
+        this.authorities = authority;
         this.enabled = enabled;
         this.lastPasswordResetDate = lastPasswordResetDate;
     }
@@ -81,7 +82,7 @@ public class JwtUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return List.of(authorities);
     }
 
     @Override
