@@ -28,7 +28,11 @@ public class MemberService {
     }
 
     public void addRole(long memberId, String role) {
+        var me = userService.getLoggedInUser();
         memberRepository.findById(memberId).ifPresentOrElse(member -> {
+            var team = new ArrayList<>(member.getTeams()).get(0);
+            if (!member.getUser().getId().equals(me.getId()) && !team.getCreator().getUser().getId().equals(me.getId()))
+                throw new AccessDeniedException("You do not have permission to edit roles list of this user");
             if (isRoleAlreadyInUse(member, role))
                 throw new ResourceAlreadyInUseException("Role", "name", role);
             member.addRole(role);
