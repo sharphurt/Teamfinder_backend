@@ -79,7 +79,7 @@ public class ApplicationService {
         var me = userService.getLoggedInUser();
         teamService.getByTeamId(teamId).ifPresentOrElse(team -> {
             if (!isUserCreatedTeam(me, team))
-                throw new AccessDeniedException("You do not have permission to view the list of applications for this team.");
+                throw new AccessDeniedException("You do not have permission to clear the list of applications for this team.");
             if (applicationRepository.countAllByTeamId(teamId) == 0)
                 throw new ResourceNotFoundException("No team applications found");
             applicationRepository.deleteAllByTeamId(teamId);
@@ -89,15 +89,21 @@ public class ApplicationService {
     }
 
     public void acceptApplication(long applicationId) {
-        var application = applicationRepository.findById(applicationId).get();
-            teamService.getByTeamId(application.getTeamId()).ifPresentOrElse(team -> {
-                var member = memberService.createMember(application.getUser(), Set.of());
-                team.addMember(member);
-                teamService.save(team);
-                applicationRepository.deleteByUserIdAndTeamId(member.getUser().getId(), team.getId());
-            }, () -> {
-                throw new ResourceNotFoundException("Team", "team id", application.getTeamId());
-            });
+        applicationRepository.findById(applicationId).ifPresentOrElse(application ->
+                teamService.getByTeamId(application.getTeamId()).ifPresentOrElse(team -> {
+                    var me = userService.getLoggedInUser();
+                    if (!isUserCreatedTeam(me, team))
+                        throw new AccessDeniedException("You do not have permission to accept applications for this team.");
+                    var member = memberService.createMember(application.getUser(), Set.of());
+                    team.addMember(member);
+                    teamService.save(team);
+                    applicationRepository.deleteByUserIdAndTeamId(member.getUser().getId(), team.getId());
+                }, () -> {
+                    throw new ResourceNotFoundException("Team", "team id", application.getTeamId());
+                }), () -> {
+            throw new ResourceNotFoundException("Application", "application id", applicationId);
+        });
+
     }
 
     public List<Application> getApplicationsForUser(long userId) {
