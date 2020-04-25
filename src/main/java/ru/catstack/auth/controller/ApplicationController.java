@@ -49,4 +49,10 @@ public class ApplicationController {
         applicationService.clearApplications(teamId);
         return new ApiResponse("Application deleted successfully");
     }
+
+    @GetMapping("/accept")
+    public ApiResponse acceptApplication(@RequestParam long applicationId) {
+        applicationService.acceptApplication(applicationId);
+        return new ApiResponse("Application accepted successfully");
+    }
 }

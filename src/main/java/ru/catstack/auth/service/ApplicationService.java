@@ -14,6 +14,7 @@ import ru.catstack.auth.repository.ApplicationRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ApplicationService {
@@ -85,6 +86,18 @@ public class ApplicationService {
         }, () -> {
             throw new ResourceNotFoundException("Team", "team id", teamId);
         });
+    }
+
+    public void acceptApplication(long applicationId) {
+        var application = applicationRepository.findById(applicationId).get();
+            teamService.getByTeamId(application.getTeamId()).ifPresentOrElse(team -> {
+                var member = memberService.createMember(application.getUser(), Set.of());
+                team.addMember(member);
+                teamService.save(team);
+                applicationRepository.deleteByUserIdAndTeamId(member.getUser().getId(), team.getId());
+            }, () -> {
+                throw new ResourceNotFoundException("Team", "team id", application.getTeamId());
+            });
     }
 
     public List<Application> getApplicationsForUser(long userId) {

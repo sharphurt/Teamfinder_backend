@@ -56,7 +56,7 @@ public class TeamService {
         return teamRepository.findById(teamId);
     }
 
-    private Team save(Team team) {
+    public Team save(Team team) {
         return teamRepository.save(team);
     }
 
