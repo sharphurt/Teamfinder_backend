@@ -108,7 +108,7 @@ public class ApplicationService {
             var me = userService.getLoggedInUser();
             var team = application.getTeam();
             if (!isUserCreatedTeam(me, team))
-                throw new AccessDeniedException("You do not have permission to accept applications for this team.");
+                throw new AccessDeniedException("You do not have permission to decline applications for this team.");
             applicationRepository.deleteByUserIdAndTeamId(application.getUser().getId(), application.getTeam().getId());
         }, () -> {
             throw new ResourceNotFoundException("Application", "application id", applicationId);
