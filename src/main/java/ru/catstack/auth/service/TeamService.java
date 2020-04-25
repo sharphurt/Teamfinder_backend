@@ -3,6 +3,7 @@ package ru.catstack.auth.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.ResourceAlreadyInUseException;
+import ru.catstack.auth.exception.ResourceNotFoundException;
 import ru.catstack.auth.model.Member;
 import ru.catstack.auth.model.Role;
 import ru.catstack.auth.model.Team;
@@ -47,6 +48,52 @@ public class TeamService {
         team.addMember(creatorMember);
         return save(team);
     }
+
+    public void addMember(long userId, long teamId) {
+        var member = memberService.createMember(getUserOrThrow(userId), Set.of());
+        var team = getTeamOrThrow(teamId);
+        team.addMember(member);
+        save(team);
+    }
+
+    public void addMember(Member member, Team team) {
+        team.addMember(member);
+        save(team);
+    }
+
+    public void removeMember(Member member, Team team) {
+        team.removeMember(member);
+        save(team);
+    }
+
+    public void removeMember(long memberId, long teamId) {
+        var member = getMemberOrThrow(memberId);
+        var team = getTeamOrThrow(teamId);
+        team.removeMember(member);
+        save(team);
+    }
+
+    private User getUserOrThrow(long userId) {
+        var optionalUser = userService.findById(userId);
+        if (optionalUser.isEmpty())
+            throw new ResourceNotFoundException("Member", "member id", userId);
+        return optionalUser.get();
+    }
+
+    private Member getMemberOrThrow(long memberId) {
+        var optionalMember = memberService.findById(memberId);
+        if (optionalMember.isEmpty())
+            throw new ResourceNotFoundException("Member", "member id", memberId);
+        return optionalMember.get();
+    }
+
+    private Team getTeamOrThrow(long teamId) {
+        var optionalTeam = teamRepository.findById(teamId);
+        if (optionalTeam.isEmpty())
+            throw new ResourceNotFoundException("Team", "team id", teamId);
+        return optionalTeam.get();
+    }
+
 
     private long teamsCount() {
         return teamRepository.count();

@@ -95,8 +95,7 @@ public class ApplicationService {
             if (!isUserCreatedTeam(me, team))
                 throw new AccessDeniedException("You do not have permission to accept applications for this team.");
             var member = memberService.createMember(application.getUser(), Set.of());
-            team.addMember(member);
-            teamService.save(team);
+            teamService.addMember(member, team);
             applicationRepository.deleteByUserIdAndTeamId(member.getUser().getId(), team.getId());
         }, () -> {
             throw new ResourceNotFoundException("Application", "application id", applicationId);

@@ -12,6 +12,7 @@ import ru.catstack.auth.repository.MemberRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -67,6 +68,10 @@ public class MemberService {
     Member createMember(User user, Set<Role> roles) {
         var member = new Member(user, roles);
         return memberRepository.save(member);
+    }
+
+    public Optional<Member> findById(long id){
+        return memberRepository.findById(id);
     }
 
     public Member save(Member member) {

@@ -37,4 +37,16 @@ public class TeamController {
         var teams = teamService.getTeamsGap(from, count);
         return new ApiResponse(teams.toArray());
     }
+
+    @GetMapping("/add")
+    public ApiResponse addMember(@RequestParam long userId, @RequestParam long teamId) {
+        teamService.addMember(userId, teamId);
+        return new ApiResponse("Member added successfully");
+    }
+
+    @GetMapping("/remove")
+    public ApiResponse removeMember(@RequestParam long memberId, @RequestParam long teamId) {
+        teamService.removeMember(memberId, teamId);
+        return new ApiResponse("Member removed successfully");
+    }
 }

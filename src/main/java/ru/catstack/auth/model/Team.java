@@ -110,4 +110,8 @@ public class Team extends DateAudit {
     public void addMember(Member member) {
         this.members.add(member);
     }
+
+    public void removeMember(Member member) {
+        this.members.remove(member);
+    }
 }
