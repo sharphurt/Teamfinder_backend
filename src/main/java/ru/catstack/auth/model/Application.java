@@ -17,11 +17,12 @@ public class Application {
     private User user;
 
     @JsonIgnore
-    @Column(name = "team_id")
-    private long teamId;
+    @OneToOne
+    @JoinColumn(name = "team_id", referencedColumnName = "team_id")
+    private Team team;
 
-    public Application(User user, long teamId) {
-        this.teamId = teamId;
+    public Application(User user, Team team) {
+        this.team = team;
         this.user = user;
     }
 
@@ -37,7 +38,7 @@ public class Application {
         return user;
     }
 
-    public long getTeamId() {
-        return teamId;
+    public Team getTeam() {
+        return team;
     }
 }

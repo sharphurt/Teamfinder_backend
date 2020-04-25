@@ -55,4 +55,10 @@ public class ApplicationController {
         applicationService.acceptApplication(applicationId);
         return new ApiResponse("Application accepted successfully");
     }
+
+    @GetMapping("/decline")
+    public ApiResponse declineApplication(@RequestParam long applicationId) {
+        applicationService.declineApplication(applicationId);
+        return new ApiResponse("Application declined successfully");
+    }
 }
