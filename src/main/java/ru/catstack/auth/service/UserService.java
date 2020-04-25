@@ -90,13 +90,11 @@ public class UserService {
     }
 
 
-    public String updateUsernameById(Long id, String username) {
+    public void updateUsernameById(Long id, String username) {
         if (existsByUsername(username))
             throw new ResourceAlreadyInUseException("Username", "value", username);
         userRepository.updateUsernameById(id, username);
         setUpdatedAtById(id, Instant.now());
-        var updatedUser = userRepository.findById(id).get();
-        return jwtTokenProvider.createToken(updatedUser);
     }
 
     public void updateFirstNameById(Long id, String firstName) {

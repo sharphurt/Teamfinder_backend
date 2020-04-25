@@ -24,43 +24,43 @@ public class UpdateUserInfoController {
     @PostMapping("/setUsername")
     public ApiResponse setUsername(@Valid @RequestBody SetUsername updateInfo) {
         var me = userService.getLoggedInUser();
-        var newToken = userService.updateUsernameById(me.getId(), updateInfo.getUsername());
-        return new ApiResponse(newToken);
+        userService.updateUsernameById(me.getId(), updateInfo.getUsername());
+        return new ApiResponse("Username updated successfully");
     }
 
     @PostMapping("/setFirstName")
     public ApiResponse setFirstName(@Valid @RequestBody SetFirstName updateInfo) {
         var me = userService.getLoggedInUser();
         userService.updateFirstNameById(me.getId(), updateInfo.getFirstName());
-        return new ApiResponse("Information saved successfully");
+        return new ApiResponse("First name updated successfully");
     }
 
     @PostMapping("/setLastName")
     public ApiResponse setLastName(@Valid @RequestBody SetLastName updateInfo) {
         var me = userService.getLoggedInUser();
         userService.updateLastNameById(me.getId(), updateInfo.getLastName());
-        return new ApiResponse("Information saved successfully");
+        return new ApiResponse("Last name updated successfully");
     }
 
     @PostMapping("/setAge")
     public ApiResponse setAge(@Valid @RequestBody SetAge updateInfo) {
         var me = userService.getLoggedInUser();
         userService.updateAgeById(me.getId(), updateInfo.getAge());
-        return new ApiResponse("Information saved successfully");
+        return new ApiResponse("Age updated successfully");
     }
 
     @PostMapping("/setEmail")
     public ApiResponse setEmail(@Valid @RequestBody SetEmail updateInfo) {
         var me = userService.getLoggedInUser();
         userService.updateEmailById(me.getId(), updateInfo.getEmail());
-        return new ApiResponse("Information saved successfully");
+        return new ApiResponse("Email updated successfully");
     }
 
     @PostMapping("/setPassword")
     public ApiResponse setPassword(@Valid @RequestBody SetPassword updateInfo) {
         var me = userService.getLoggedInUser();
         userService.updatePasswordById(me.getId(), updateInfo.getPassword());
-        return new ApiResponse("Information saved successfully");
+        return new ApiResponse("Password updated successfully");
     }
 
     @PostMapping("/setAbout")
