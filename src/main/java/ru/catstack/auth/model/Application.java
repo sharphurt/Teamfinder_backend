@@ -12,16 +12,17 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "user_id")
-    private long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private User user;
 
     @JsonIgnore
     @Column(name = "team_id")
     private long teamId;
 
-    public Application(long userId, long teamId) {
+    public Application(User user, long teamId) {
         this.teamId = teamId;
-        this.userId = userId;
+        this.user = user;
     }
 
     public Application() {
@@ -32,8 +33,8 @@ public class Application {
         return id;
     }
 
-    public long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     public long getTeamId() {

@@ -33,7 +33,7 @@ public class ApplicationService {
     public Optional<Application> createApplication(long teamId) {
         var me = userService.getLoggedInUser();
         return teamService.getByTeamId(teamId).map(team -> {
-            var application = new Application(me.getId(), team.getId());
+            var application = new Application(me, team.getId());
             if (team.getCreator().getUser().getId().equals(me.getId()))
                 throw new UserAlreadyInTeamException("You are the creator of the team. You are already in this team");
             if (applicationExists(application))
@@ -55,7 +55,7 @@ public class ApplicationService {
 
     public void deleteApplication(long teamId) {
         var me = userService.getLoggedInUser();
-        if (applicationExists(new Application(me.getId(), teamId))) {
+        if (applicationExists(new Application(me, teamId))) {
             applicationRepository.deleteByUserIdAndTeamId(me.getId(), teamId);
         } else
             throw new ResourceNotFoundException("Application", "team id", teamId);
@@ -96,6 +96,6 @@ public class ApplicationService {
     }
 
     private boolean applicationExists(Application application) {
-        return applicationRepository.existsByUserIdAndTeamId(application.getUserId(), application.getTeamId());
+        return applicationRepository.existsByUserIdAndTeamId(application.getUser().getId(), application.getTeamId());
     }
 }
