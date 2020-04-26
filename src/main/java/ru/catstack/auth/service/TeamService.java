@@ -49,6 +49,10 @@ public class TeamService {
         return save(team);
     }
 
+    public void deleteTeam(long teamId) {
+        teamRepository.deleteById(teamId);
+    }
+
     public void addMember(long userId, long teamId) {
         var member = memberService.createMember(getUserOrThrow(userId), Set.of());
         var team = getTeamOrThrow(teamId);

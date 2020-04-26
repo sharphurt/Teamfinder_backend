@@ -38,6 +38,12 @@ public class TeamController {
         return new ApiResponse(teams.toArray());
     }
 
+    @GetMapping("/delete")
+    public ApiResponse deleteTeam(@RequestParam long teamId) {
+        teamService.deleteTeam(teamId);
+        return new ApiResponse("Team deleted successfully");
+    }
+
     @GetMapping("/add")
     public ApiResponse addMember(@RequestParam long userId, @RequestParam long teamId) {
         teamService.addMember(userId, teamId);
