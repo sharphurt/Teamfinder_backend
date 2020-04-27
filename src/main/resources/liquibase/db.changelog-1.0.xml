@@ -43,7 +43,7 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="has_picture" type="BOOLEAN">
+            <column name="avatar" type="VARCHAR(3000)">
                 <constraints nullable="true"/>
             </column>
 
@@ -152,26 +152,6 @@
             </column>
 
             <column name="role_id" type="BIGINT">
-                <constraints nullable="false" unique="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="1.0.6" author="sharphurt">
-        <createTable tableName="images">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-
-            <column name="user_id" type="BIGINT">
-                <constraints nullable="false" unique="true"/>
-            </column>
-
-            <column name="name" type="VARCHAR(100)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-
-            <column name="base64_code" type="VARCHAR(1000)">
                 <constraints nullable="false" unique="false"/>
             </column>
         </createTable>
