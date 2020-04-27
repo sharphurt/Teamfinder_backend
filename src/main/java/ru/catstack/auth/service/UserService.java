@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.ResourceAlreadyInUseException;
+import ru.catstack.auth.exception.ResourceNotFoundException;
 import ru.catstack.auth.model.Status;
 import ru.catstack.auth.model.User;
 import ru.catstack.auth.model.payload.request.RegistrationRequest;
@@ -64,6 +65,13 @@ public class UserService {
     public void updateAvatarById(Long id, String avatarCode) {
         userRepository.updateAvatarById(id, avatarCode);
         setUpdatedAtById(id, Instant.now());
+    }
+
+    User getUserOrThrow(long userId) {
+        var optionalUser = findById(userId);
+        if (optionalUser.isEmpty())
+            throw new ResourceNotFoundException("Member", "member id", userId);
+        return optionalUser.get();
     }
 
     User createUser(RegistrationRequest registerRequest) {

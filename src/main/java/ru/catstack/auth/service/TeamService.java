@@ -55,7 +55,7 @@ public class TeamService {
     }
 
     public void addMember(long userId, long teamId) {
-        var member = memberService.createMember(getUserOrThrow(userId), Set.of());
+        var member = memberService.createMember(userService.getUserOrThrow(userId), Set.of());
         var team = getTeamOrThrow(teamId);
         team.addMember(member);
         save(team);
@@ -76,13 +76,6 @@ public class TeamService {
         var team = getTeamOrThrow(teamId);
         team.removeMember(member);
         save(team);
-    }
-
-    private User getUserOrThrow(long userId) {
-        var optionalUser = userService.findById(userId);
-        if (optionalUser.isEmpty())
-            throw new ResourceNotFoundException("Member", "member id", userId);
-        return optionalUser.get();
     }
 
     private Member getMemberOrThrow(long memberId) {
