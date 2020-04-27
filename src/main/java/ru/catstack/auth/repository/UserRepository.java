@@ -50,8 +50,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void setUpdatedAtById(@Param("id") Long id, @Param("updatedAt") Instant updatedAt);
 
     @Transactional @Modifying
-    @Query("UPDATE User c SET c.hasPicture = :hasPicture WHERE c.id = :id")
-    void updateHasPictureById(@Param("id") Long id, @Param("hasPicture") boolean hasPicture);
+    @Query("UPDATE User c SET c.avatar = :avatar WHERE c.id = :id")
+    void updateAvatarById(@Param("id") Long id, @Param("avatar") String avatar);
 
     Boolean existsByEmail(String email);
     Boolean existsByUsername(String username);

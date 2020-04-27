@@ -1,6 +1,7 @@
 package ru.catstack.auth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.ResourceAlreadyInUseException;
 import ru.catstack.auth.exception.ResourceNotFoundException;
@@ -54,13 +55,13 @@ public class TeamService {
     }
 
     public void addMember(long userId, long teamId) {
-        var member = memberService.createMember(getUserOrThrow(userId), Set.of());
+        var member = memberService.createMember(userService.getUserOrThrow(userId), Set.of());
         var team = getTeamOrThrow(teamId);
         team.addMember(member);
         save(team);
     }
 
-    public void addMember(Member member, Team team) {
+    void addMember(Member member, Team team) {
         team.addMember(member);
         save(team);
     }
@@ -77,13 +78,6 @@ public class TeamService {
         save(team);
     }
 
-    private User getUserOrThrow(long userId) {
-        var optionalUser = userService.findById(userId);
-        if (optionalUser.isEmpty())
-            throw new ResourceNotFoundException("Member", "member id", userId);
-        return optionalUser.get();
-    }
-
     private Member getMemberOrThrow(long memberId) {
         var optionalMember = memberService.findById(memberId);
         if (optionalMember.isEmpty())
@@ -91,13 +85,21 @@ public class TeamService {
         return optionalMember.get();
     }
 
-    private Team getTeamOrThrow(long teamId) {
+    Team getTeamOrThrow(long teamId) {
         var optionalTeam = teamRepository.findById(teamId);
         if (optionalTeam.isEmpty())
             throw new ResourceNotFoundException("Team", "team id", teamId);
         return optionalTeam.get();
     }
 
+    Optional<Member> getMemberByTeam(Team team) {
+        var me = userService.getLoggedInUser();
+        for (var member : team.getMembers()) {
+            if (member.getUser().getId().equals(me.getId()))
+                return Optional.of(member);
+        }
+        return Optional.empty();
+    }
 
     private long teamsCount() {
         return teamRepository.count();
@@ -107,12 +109,14 @@ public class TeamService {
         return teamRepository.findById(teamId);
     }
 
-    public Team save(Team team) {
+    private Team save(Team team) {
         return teamRepository.save(team);
     }
 
+    private Sort sort = new Sort(Sort.Direction.DESC, "createdAt");
+
     public List<Team> getTeamsGap(int from, int count) {
-        return teamRepository.findAll(new OffsetBasedPage(from, count)).getContent();
+        return teamRepository.findAll(new OffsetBasedPage(from, count, sort)).getContent();
     }
 
 }

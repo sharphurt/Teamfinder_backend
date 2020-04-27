@@ -40,8 +40,8 @@ public class User extends DateAudit {
     @Column(name = "about_me")
     private String aboutMe;
 
-    @Column(name = "has_picture")
-    private boolean hasPicture;
+    @Column(name = "avatar")
+    private String avatar;
 
     @Column(name = "role")
     private String role;
@@ -54,7 +54,7 @@ public class User extends DateAudit {
     }
 
     public User(String email, String password, String username, String firstName,
-                String lastName, Byte age, boolean hasPicture, String role, Status status) {
+                String lastName, Byte age, String role, Status status) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -63,11 +63,10 @@ public class User extends DateAudit {
         this.age = age;
         this.role = role;
         this.status = status;
-        this.hasPicture = hasPicture;
     }
 
     public User(Long id, String email, String password, String username, String firstName,
-                String lastName, Byte age, boolean hasPicture) {
+                String lastName, Byte age) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -75,7 +74,6 @@ public class User extends DateAudit {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
-        this.hasPicture = hasPicture;
     }
 
     public Long getId() {
@@ -118,7 +116,11 @@ public class User extends DateAudit {
         return aboutMe;
     }
 
-    public boolean getPictureAvailability() {
-        return hasPicture;
+    String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

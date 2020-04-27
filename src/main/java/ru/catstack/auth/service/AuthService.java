@@ -96,8 +96,8 @@ public class AuthService {
             refreshTokenService.save(refreshToken);
 
             var session = refreshToken.getUserSession();
-            var user = userService.findById(session.getUserId());
-            var newToken = generateToken(user.get());
+            var user = userService.getUserOrThrow(session.getUserId());
+            var newToken = generateToken(user);
             return Optional.of(newToken);
         }
         throw new TokenRefreshException(tokenRefreshRequest.getRefreshToken(), "Missing refresh token in database. Please login again");
