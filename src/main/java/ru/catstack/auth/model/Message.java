@@ -43,8 +43,8 @@ public class Message extends DateAudit {
         return team;
     }
 
-    public Member getSender() {
-        return sender;
+    public Sender getSender() {
+        return Sender.fromUser(sender.getUser());
     }
 
     public String getMessage() {
