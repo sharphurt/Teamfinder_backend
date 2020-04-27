@@ -65,6 +65,5 @@ public class RefreshTokenService {
 
     void increaseCount(RefreshToken refreshToken) {
         refreshToken.incrementRefreshCount();
-        save(refreshToken);
     }
 }

@@ -93,6 +93,8 @@ public class AuthService {
             refreshTokenService.verifyExpiration(refreshToken);
             sessionService.verifyRefreshAvailability(refreshToken);
             refreshTokenService.increaseCount(refreshToken);
+            refreshTokenService.save(refreshToken);
+
             var session = refreshToken.getUserSession();
             var user = userService.findById(session.getUserId());
             var newToken = generateToken(user.get());
