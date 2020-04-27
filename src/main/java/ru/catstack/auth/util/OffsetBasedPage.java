@@ -6,9 +6,10 @@ import org.springframework.data.domain.Sort;
 public class OffsetBasedPage implements Pageable {
     private int limit;
     private int offset;
-    private Sort sort = new Sort(Sort.Direction.DESC, "createdAt");
+    private Sort sort;
 
-    public OffsetBasedPage(int offset, int limit) {
+    public OffsetBasedPage(int offset, int limit, Sort sort) {
+        this.sort = sort;
         if (limit < 1) {
             throw new IllegalArgumentException("Limit must not be less than one!");
         }
@@ -41,11 +42,11 @@ public class OffsetBasedPage implements Pageable {
 
     @Override
     public Pageable next() {
-        return new OffsetBasedPage(getPageSize(), (int) (getOffset() + getPageSize()));
+        return new OffsetBasedPage(getPageSize(), (int) (getOffset() + getPageSize()), sort);
     }
 
-    public Pageable previous() {
-        return hasPrevious() ? new OffsetBasedPage(getPageSize(), (int) (getOffset() - getPageSize())) : this;
+    private Pageable previous() {
+        return hasPrevious() ? new OffsetBasedPage(getPageSize(), (int) (getOffset() - getPageSize()), sort) : this;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class OffsetBasedPage implements Pageable {
 
     @Override
     public Pageable first() {
-        return new OffsetBasedPage(getPageSize(), 0);
+        return new OffsetBasedPage(getPageSize(), 0, sort);
     }
 
     @Override
