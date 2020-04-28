@@ -20,8 +20,8 @@ public class RefreshToken extends DateAudit {
     @NaturalId(mutable = true)
     private String token;
 
-    @OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="session_id")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "session_id")
     private Session session;
 
     @Column(name = "user_id")
@@ -45,7 +45,7 @@ public class RefreshToken extends DateAudit {
     }
 
     public void incrementRefreshCount() {
-        refreshCount =+ 1L;
+        this.refreshCount++;
     }
 
     public Long getId() {
