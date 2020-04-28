@@ -7,6 +7,7 @@ import ru.catstack.auth.exception.ResourceAlreadyInUseException;
 import ru.catstack.auth.exception.ResourceNotFoundException;
 import ru.catstack.auth.model.Member;
 import ru.catstack.auth.model.Role;
+import ru.catstack.auth.model.Team;
 import ru.catstack.auth.model.User;
 import ru.catstack.auth.repository.MemberRepository;
 
@@ -41,6 +42,16 @@ public class MemberService {
         }, () -> {
             throw new ResourceNotFoundException("Member", "member id", memberId);
         });
+    }
+
+
+    Optional<Member> getMemberByTeam(Team team) {
+        var me = userService.getLoggedInUser();
+        for (var member : team.getMembers()) {
+            if (member.getUser().getId().equals(me.getId()))
+                return Optional.of(member);
+        }
+        return Optional.empty();
     }
 
     private boolean isRoleAlreadyInUse(Member member, String role) {

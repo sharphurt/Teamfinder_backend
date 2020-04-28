@@ -9,6 +9,7 @@ import ru.catstack.auth.model.Team;
 import ru.catstack.auth.model.payload.request.SendMessageRequest;
 import ru.catstack.auth.repository.MessageRepository;
 import ru.catstack.auth.util.OffsetBasedPage;
+import ru.catstack.auth.util.Util;
 
 import java.util.List;
 
@@ -16,20 +17,27 @@ import java.util.List;
 public class MessageService {
     private final MessageRepository messageRepository;
     private final TeamService teamService;
+    private final UserService userService;
+    private final MemberService memberService;
 
     @Autowired
-    public MessageService(MessageRepository messageRepository, TeamService teamService) {
+    public MessageService(MessageRepository messageRepository, TeamService teamService, UserService userService, MemberService memberService) {
         this.messageRepository = messageRepository;
         this.teamService = teamService;
+        this.userService = userService;
+        this.memberService = memberService;
     }
 
-    public Message sendMessage(SendMessageRequest request) {
+    public void sendMessage(SendMessageRequest request) {
+        var me = userService.getLoggedInUser();
         var team = teamService.getTeamOrThrow(request.getTeamId());
-        return createMessage(team, request.getMessage());
+        if (!Util.IsTeamContainsUser(team, me.getId()))
+            throw new AccessDeniedException("You do not have access to the messages of this command");
+        createMessage(team, request.getMessage());
     }
 
-    private Message createMessage(Team team, String message) {
-        return teamService.getMemberByTeam(team)
+    private void createMessage(Team team, String message) {
+        memberService.getMemberByTeam(team)
                 .map(member -> {
                     var msg = new Message(team, member, message);
                     return messageRepository.save(msg);
@@ -40,6 +48,10 @@ public class MessageService {
     private Sort sort = new Sort(Sort.Direction.DESC, "createdAt");
 
     public List<Message> getMessagesGap(int from, int count, long teamId) {
+        var team = teamService.getTeamOrThrow(teamId);
+        var me = userService.getLoggedInUser();
+        if (!Util.IsTeamContainsUser(team, me.getId()))
+            throw new AccessDeniedException("You do not have access to the messages of this command");
         return messageRepository.findAllByTeamId(teamId, new OffsetBasedPage(from, count, sort)).getContent();
     }
 }

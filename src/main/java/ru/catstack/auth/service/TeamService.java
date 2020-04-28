@@ -92,14 +92,6 @@ public class TeamService {
         return optionalTeam.get();
     }
 
-    Optional<Member> getMemberByTeam(Team team) {
-        var me = userService.getLoggedInUser();
-        for (var member : team.getMembers()) {
-            if (member.getUser().getId().equals(me.getId()))
-                return Optional.of(member);
-        }
-        return Optional.empty();
-    }
 
     private long teamsCount() {
         return teamRepository.count();
