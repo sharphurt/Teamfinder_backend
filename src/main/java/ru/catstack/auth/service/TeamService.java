@@ -5,13 +5,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.catstack.auth.exception.ResourceAlreadyInUseException;
 import ru.catstack.auth.exception.ResourceNotFoundException;
-import ru.catstack.auth.model.Member;
-import ru.catstack.auth.model.Role;
-import ru.catstack.auth.model.Team;
-import ru.catstack.auth.model.User;
+import ru.catstack.auth.model.*;
 import ru.catstack.auth.model.payload.request.TeamRegistrationRequest;
 import ru.catstack.auth.repository.TeamRepository;
 import ru.catstack.auth.util.OffsetBasedPage;
+import ru.catstack.auth.util.Util;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,32 +20,34 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final UserService userService;
     private final MemberService memberService;
+    private final MessageService messageService;
 
     @Autowired
-    TeamService(TeamRepository teamRepository, UserService userService, MemberService memberService) {
+    TeamService(TeamRepository teamRepository, UserService userService, MemberService memberService, MessageService messageService) {
         this.teamRepository = teamRepository;
         this.userService = userService;
         this.memberService = memberService;
+        this.messageService = messageService;
     }
 
-    public Optional<Team> registerTeam(TeamRegistrationRequest request) {
+    public void registerTeam(TeamRegistrationRequest request) {
         var name = request.getName();
         var me = userService.getLoggedInUser();
         if (nameAlreadyExists(name))
             throw new ResourceAlreadyInUseException("Team name", "value", name);
-        var createdTeam = createTeam(me, request);
-        return Optional.ofNullable(createdTeam);
+        createTeam(me, request);
     }
 
     private boolean nameAlreadyExists(String name) {
         return teamRepository.existsByName(name);
     }
 
-    private Team createTeam(User creator, TeamRegistrationRequest request) {
+    private void createTeam(User creator, TeamRegistrationRequest request) {
         var creatorMember = memberService.createMember(creator, Set.of(new Role("CREATOR")));
         var team = new Team(request.getName(), request.getDescription(), creatorMember, request.getPicCode());
         team.addMember(creatorMember);
-        return save(team);
+        var saved = save(team);
+        messageService.sendCreateMessage(saved, creatorMember);
     }
 
     public void deleteTeam(long teamId) {
@@ -56,26 +56,26 @@ public class TeamService {
 
     public void addMember(long userId, long teamId) {
         var member = memberService.createMember(userService.getUserOrThrow(userId), Set.of());
-        var team = getTeamOrThrow(teamId);
-        team.addMember(member);
-        save(team);
+        var team = Util.getTeamOrThrow(teamId);
+        addMember(member, team);
     }
 
     void addMember(Member member, Team team) {
         team.addMember(member);
         save(team);
+        messageService.sendJoinMessage(team, member);
     }
 
-    public void removeMember(Member member, Team team) {
+    private void removeMember(Member member, Team team) {
         team.removeMember(member);
         save(team);
+        messageService.sendLeaveMessage(team, member);
     }
 
     public void removeMember(long memberId, long teamId) {
         var member = getMemberOrThrow(memberId);
-        var team = getTeamOrThrow(teamId);
-        team.removeMember(member);
-        save(team);
+        var team = Util.getTeamOrThrow(teamId);
+        removeMember(member, team);
     }
 
     private Member getMemberOrThrow(long memberId) {
@@ -84,14 +84,6 @@ public class TeamService {
             throw new ResourceNotFoundException("Member", "member id", memberId);
         return optionalMember.get();
     }
-
-    Team getTeamOrThrow(long teamId) {
-        var optionalTeam = teamRepository.findById(teamId);
-        if (optionalTeam.isEmpty())
-            throw new ResourceNotFoundException("Team", "team id", teamId);
-        return optionalTeam.get();
-    }
-
 
     private long teamsCount() {
         return teamRepository.count();

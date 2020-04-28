@@ -27,9 +27,8 @@ public class TeamController {
 
     @PostMapping("/register")
     public ApiResponse registerTeam(@Valid @RequestBody TeamRegistrationRequest request) {
-        return teamService.registerTeam(request)
-                .map(team -> new ApiResponse("Team created successfully"))
-                .orElseThrow(() -> new TeamRegistrationException(request.getName(), "Unexpected error"));
+        teamService.registerTeam(request);
+        return new ApiResponse("Team created successfully");
     }
 
     @GetMapping("/get")
