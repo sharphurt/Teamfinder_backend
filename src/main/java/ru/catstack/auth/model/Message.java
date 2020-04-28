@@ -5,6 +5,7 @@ import ru.catstack.auth.model.audit.DateAudit;
 
 import javax.persistence.*;
 
+
 @Entity
 @Table(name = "message")
 public class Message extends DateAudit {
@@ -25,9 +26,14 @@ public class Message extends DateAudit {
     @Column(name = "message")
     private String message;
 
-    public Message(Team team, Member sender, String message) {
+    @Column(name = "message_type")
+    @Enumerated(EnumType.STRING)
+    private MessageType type;
+
+    public Message(Team team, Member sender, MessageType type, String message) {
         this.team = team;
         this.sender = sender;
+        this.type = type;
         this.message = message;
     }
 
@@ -49,5 +55,9 @@ public class Message extends DateAudit {
 
     public String getMessage() {
         return message;
+    }
+
+    public MessageType getType() {
+        return type;
     }
 }
