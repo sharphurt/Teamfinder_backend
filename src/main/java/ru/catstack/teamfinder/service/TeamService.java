@@ -23,13 +23,15 @@ public class TeamService {
     private final UserService userService;
     private final MemberService memberService;
     private final MessageService messageService;
+    private final TagService tagService;
 
     @Autowired
-    TeamService(TeamRepository teamRepository, UserService userService, MemberService memberService, MessageService messageService) {
+    TeamService(TeamRepository teamRepository, UserService userService, MemberService memberService, MessageService messageService, TagService tagService) {
         this.teamRepository = teamRepository;
         this.userService = userService;
         this.memberService = memberService;
         this.messageService = messageService;
+        this.tagService = tagService;
     }
 
     public void registerTeam(TeamRegistrationRequest request) {
@@ -98,7 +100,18 @@ public class TeamService {
         teamRepository.save(team);
     }
 
-
+    public void deleteTag(long tagId) {
+        var me = userService.getLoggedInUser();
+        tagService.findById(tagId).ifPresentOrElse(tag -> {
+            var team = new ArrayList<>(tag.getTeams()).get(0);
+            if (!team.getCreator().getUser().getId().equals(me.getId()))
+                throw new AccessDeniedException("You do not have permission to edit tags list of this user");
+            team.getTags().remove(tag);
+            teamRepository.save(team);
+        }, () -> {
+            throw new ResourceNotFoundException("Tag", "role id", tagId);
+        });
+    }
 
     private boolean isTagAlreadyInUse(Team team, String tagName) {
         for (var tag : team.getTags()) {

@@ -26,4 +26,8 @@ public class TagService {
         return tagRepository.findById(roleId);
     }
 
+    public Tag save(Tag tag) {
+        return tagRepository.save(tag);
+    }
+
 }

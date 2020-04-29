@@ -26,10 +26,10 @@ public class TagController {
         teamService.addTag(request.getTeamId(), request.getTag());
         return new ApiResponse("Tag added successfully");
     }
-//
-//    @GetMapping("/delete")
-//    public ApiResponse delete(long roleId) {
-//        teamService.deleteRole(roleId);
-//        return new ApiResponse("Role deleted successfully");
-//    }
+
+    @GetMapping("/delete")
+    public ApiResponse delete(long tagId) {
+        teamService.deleteTag(tagId);
+        return new ApiResponse("Tag deleted successfully");
+    }
 }
