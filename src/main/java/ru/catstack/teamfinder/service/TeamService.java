@@ -3,6 +3,7 @@ package ru.catstack.teamfinder.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.catstack.teamfinder.exception.AccessDeniedException;
 import ru.catstack.teamfinder.exception.ResourceAlreadyInUseException;
 import ru.catstack.teamfinder.exception.ResourceNotFoundException;
 import ru.catstack.teamfinder.model.*;
@@ -11,6 +12,7 @@ import ru.catstack.teamfinder.repository.TeamRepository;
 import ru.catstack.teamfinder.util.OffsetBasedPage;
 import ru.catstack.teamfinder.util.Util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -83,6 +85,27 @@ public class TeamService {
         if (optionalMember.isEmpty())
             throw new ResourceNotFoundException("Member", "member id", memberId);
         return optionalMember.get();
+    }
+
+    public void addTag(long teamId, String tag) {
+        var me = userService.getLoggedInUser();
+        var team = Util.getTeamOrThrow(teamId);
+        if (!team.getCreator().getUser().getId().equals(me.getId()))
+            throw new AccessDeniedException("You do not have permission to edit tags list of this user");
+        if (isTagAlreadyInUse(team, tag))
+            throw new ResourceAlreadyInUseException("Tag", "name", tag);
+        team.addTag(tag);
+        teamRepository.save(team);
+    }
+
+
+
+    private boolean isTagAlreadyInUse(Team team, String tagName) {
+        for (var tag : team.getTags()) {
+            if (tag.getTag().equals(tagName))
+                return true;
+        }
+        return false;
     }
 
     private long teamsCount() {

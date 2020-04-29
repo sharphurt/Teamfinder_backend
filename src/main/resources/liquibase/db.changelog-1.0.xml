@@ -272,4 +272,38 @@
             </column>
         </createTable>
     </changeSet>
+
+
+    <changeSet id="1.0.13" author="sharphurt">
+        <createTable tableName="tags">
+            <column name="tag_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(20)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+
+            <column name="created_at" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1.0.14" author="sharphurt">
+        <createTable tableName="teams_tags">
+            <column name="team_id" type="BIGINT">
+                <constraints nullable="false" unique="false"/>
+            </column>
+
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false" unique="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

@@ -7,6 +7,7 @@ import ru.catstack.teamfinder.model.audit.DateAudit;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "teams")
@@ -35,6 +36,13 @@ public class Team extends DateAudit {
             inverseJoinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Member> members;
+    @ManyToMany(fetch = FetchType.EAGER)
+
+    @JoinTable(name = "teams_tags",
+            joinColumns = {@JoinColumn(name = "team_id", referencedColumnName = "team_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private Set<Tag> tags;
 
     @OneToOne
     @JsonIgnore
@@ -112,5 +120,17 @@ public class Team extends DateAudit {
 
     public void removeMember(Member member) {
         this.members.remove(member);
+    }
+
+    public void addTag(String tag) {
+        this.tags.add(new Tag(tag));
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
     }
 }
