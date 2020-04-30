@@ -45,6 +45,7 @@ public class Team extends DateAudit {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Member> members;
 
+    @JsonIgnore
     @Column(name = "tags_list")
     @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
     private String tagsList = "";
