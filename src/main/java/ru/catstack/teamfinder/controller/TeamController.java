@@ -3,9 +3,11 @@ package ru.catstack.teamfinder.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.catstack.teamfinder.model.payload.request.SearchRequest;
 import ru.catstack.teamfinder.model.payload.request.TeamRegistrationRequest;
 import ru.catstack.teamfinder.model.payload.response.ApiResponse;
 import ru.catstack.teamfinder.service.TeamService;
+import ru.catstack.teamfinder.service.search.TeamsSearchService;
 
 import javax.validation.Valid;
 
@@ -14,10 +16,12 @@ import javax.validation.Valid;
 public class TeamController {
 
     private final TeamService teamService;
+    private final TeamsSearchService searchService;
 
     @Autowired
-    public TeamController(TeamService teamService) {
+    public TeamController(TeamService teamService, TeamsSearchService searchService) {
         this.teamService = teamService;
+        this.searchService = searchService;
     }
 
     @PostMapping("/register")
@@ -48,5 +52,10 @@ public class TeamController {
     public ApiResponse removeMember(@RequestParam long memberId, @RequestParam long teamId) {
         teamService.removeMember(memberId, teamId);
         return new ApiResponse("Member removed successfully");
+    }
+
+    @GetMapping("/search")
+    public ApiResponse search(@Valid @RequestBody SearchRequest request) {
+        return new ApiResponse(searchService.findTeamsByKeyword(request.getSearchString()));
     }
 }

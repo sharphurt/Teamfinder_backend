@@ -11,8 +11,8 @@ import javax.validation.constraints.Pattern;
 public class TeamRegistrationRequest {
 
     @NotBlank(message = "Team name cannot be blank")
-    @Pattern(regexp = "[a-zA-Z0-9]{2,30}", message = "The team name can only include uppercase and lowercase letters of the English alphabet and numbers and length must be between 2 and 30 character")
-    @ApiModelProperty(value = "A valid username", required = true, allowableValues = "NonEmpty String")
+//    @Pattern(regexp = "[a-zA-Z0-9]{2,30}", message = "The team name can only include uppercase and lowercase letters of the English alphabet and numbers and length must be between 2 and 30 character")
+    @ApiModelProperty(value = "A valid team name", required = true, allowableValues = "NonEmpty String")
     private String name;
 
     @NotBlank(message = "Description cannot be blank")

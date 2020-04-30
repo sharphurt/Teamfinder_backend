@@ -2,6 +2,11 @@ package ru.catstack.teamfinder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
 import ru.catstack.teamfinder.model.audit.DateAudit;
 
 import javax.persistence.*;
@@ -11,6 +16,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "teams")
+@Indexed
 public class Team extends DateAudit {
     @Id
     @Column(name = "team_id")
@@ -18,6 +24,7 @@ public class Team extends DateAudit {
     private Long id;
 
     @Column(name = "team_name")
+    @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
     private String name;
 
     @Column(name = "description")

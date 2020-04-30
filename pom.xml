@@ -11,9 +11,8 @@
     <groupId>net.proselyte</groupId>
     <artifactId>teamfinder</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>CatNetAuth</name>
-    <description>Teamfinder backend based on Spring security framework</description>
-
+    <name>TeamFinder</name>
+    <description>TeamFinder backend based on Spring security framework</description>
     <properties>
         <java.version>1.8</java.version>
         <mysql.connetor.version>8.0.15</mysql.connetor.version>
@@ -104,6 +103,14 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.6</version>
+        </dependency>
+
+
+        <!-- Hibernate-search -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-search-orm</artifactId>
+            <version>5.11.5.Final</version>
         </dependency>
 
     </dependencies>
