@@ -56,6 +56,6 @@ public class TeamController {
 
     @GetMapping("/search")
     public ApiResponse search(@Valid @RequestBody SearchRequest request) {
-        return new ApiResponse(searchService.findTeamsByKeyword(request.getSearchString()));
+        return new ApiResponse(searchService.findTeamsByKeyword(request.getSearchString(), request.getFrom(), request.getCount()));
     }
 }

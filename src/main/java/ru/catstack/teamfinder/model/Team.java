@@ -11,6 +11,7 @@ import ru.catstack.teamfinder.model.audit.DateAudit;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -43,8 +44,12 @@ public class Team extends DateAudit {
             inverseJoinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Member> members;
-    @ManyToMany(fetch = FetchType.EAGER)
 
+    @Column(name = "tags_list")
+    @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
+    private String tagsList = "";
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "teams_tags",
             joinColumns = {@JoinColumn(name = "team_id", referencedColumnName = "team_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
@@ -131,13 +136,27 @@ public class Team extends DateAudit {
 
     public void addTag(String tag) {
         this.tags.add(new Tag(tag));
+        this.tagsList = getTagsAsString();
     }
 
     public void removeTag(Tag tag) {
         this.tags.remove(tag);
+        this.tagsList = getTagsAsString();
+    }
+
+    private String getTagsAsString() {
+        var result = new String[this.tags.size()];
+        var tagsArr = new ArrayList<>(this.tags);
+        for (var i = 0; i < this.tags.size(); i++)
+            result[i] = tagsArr.get(i).getTag();
+        return Arrays.toString(result);
     }
 
     public Set<Tag> getTags() {
         return tags;
+    }
+
+    public String getTagsList() {
+        return tagsList;
     }
 }

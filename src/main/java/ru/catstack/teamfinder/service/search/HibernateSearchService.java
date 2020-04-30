@@ -28,8 +28,7 @@ public class HibernateSearchService {
 
     @Transactional
     public void initializeHibernateSearch() throws InterruptedException {
-        FullTextEntityManager fullTextEntityManager =
-                Search.getFullTextEntityManager(entityManager);
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
         fullTextEntityManager.createIndexer().startAndWait();
     }
 }

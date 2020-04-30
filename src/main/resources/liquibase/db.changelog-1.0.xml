@@ -183,6 +183,10 @@
                 <constraints nullable="false" unique="false"/>
             </column>
 
+            <column name="tags_list" type="VARCHAR(1000)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+
             <column name="created_at" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
                 <constraints nullable="false"/>
             </column>
