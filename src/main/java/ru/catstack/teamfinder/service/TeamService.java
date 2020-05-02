@@ -121,11 +121,19 @@ public class TeamService {
         return false;
     }
 
+    public void updateAvatarById(long teamId, String picCode) {
+        var team = Util.getTeamOrThrow(teamId);
+        var me = userService.getLoggedInUser();
+        if (!team.getCreator().getUser().getId().equals(me.getId()))
+            throw new AccessDeniedException("You cannot update avatar of this command");
+        teamRepository.updateAvatarById(teamId, picCode);
+    }
+
     private long teamsCount() {
         return teamRepository.count();
     }
 
-    Optional<Team> getByTeamId(long teamId) {
+    public Optional<Team> getByTeamId(long teamId) {
         return teamRepository.findById(teamId);
     }
 

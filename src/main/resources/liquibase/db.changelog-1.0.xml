@@ -176,7 +176,7 @@
             </column>
 
             <column name="pic" type="VARCHAR(1000)">
-                <constraints nullable="false" unique="false"/>
+                <constraints nullable="true" unique="false"/>
             </column>
 
             <column name="status" type="VARCHAR(10)">

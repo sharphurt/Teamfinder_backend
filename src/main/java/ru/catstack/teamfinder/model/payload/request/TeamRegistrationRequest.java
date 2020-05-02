@@ -20,8 +20,7 @@ public class TeamRegistrationRequest {
     @Length(max = 500, message = "Description cannot be longer than 500 characters")
     private String description;
 
-    @NotBlank(message = "Picture code cannot be blank")
-    @ApiModelProperty(value = "Picture base64 code", required = true, allowableValues = "NonEmpty String")
+    @ApiModelProperty(value = "Picture base64 code")
     private String picCode;
 
     public TeamRegistrationRequest(String name, String description, String picCode) {

@@ -7,14 +7,11 @@ import javax.persistence.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Avatar {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "base64_code", length = 1000)
     private String base64Code;
 
     public Avatar() {
