@@ -12,6 +12,7 @@ import ru.catstack.teamfinder.repository.TeamRepository;
 import ru.catstack.teamfinder.util.OffsetBasedPage;
 import ru.catstack.teamfinder.util.Util;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -127,6 +128,16 @@ public class TeamService {
         if (!team.getCreator().getUser().getId().equals(me.getId()))
             throw new AccessDeniedException("You cannot update avatar of this command");
         teamRepository.updateAvatarById(teamId, picCode);
+        teamRepository.setUpdatedAtById(teamId, Instant.now());
+    }
+
+    public void updateNameById(long teamId, String name) {
+        var team = Util.getTeamOrThrow(teamId);
+        var me = userService.getLoggedInUser();
+        if (!team.getCreator().getUser().getId().equals(me.getId()))
+            throw new AccessDeniedException("You cannot update name of this command");
+        teamRepository.updateNameById(teamId, name);
+        teamRepository.setUpdatedAtById(teamId, Instant.now());
     }
 
     private long teamsCount() {
