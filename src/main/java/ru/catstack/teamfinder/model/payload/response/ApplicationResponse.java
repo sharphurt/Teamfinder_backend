@@ -25,8 +25,8 @@ public class ApplicationResponse {
         return id;
     }
 
-    public Team getTeam() {
-        return team;
+    public TeamResponse getTeam() {
+        return TeamResponse.fromTeam(team);
     }
 
     private static ApplicationResponse fromApplication(Application application){
