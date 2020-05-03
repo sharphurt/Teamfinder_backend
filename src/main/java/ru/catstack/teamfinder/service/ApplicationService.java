@@ -114,7 +114,7 @@ public class ApplicationService {
     }
 
     public List<Application> getApplicationsForUser(long userId) {
-        return applicationRepository.findAllByTeamId(userId);
+        return applicationRepository.findAllByUserId(userId);
     }
 
     private Application save(Application application) {

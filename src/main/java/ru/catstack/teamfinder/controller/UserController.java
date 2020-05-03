@@ -6,16 +6,20 @@ import org.springframework.web.bind.annotation.*;
 import ru.catstack.teamfinder.dto.UserDto;
 import ru.catstack.teamfinder.exception.NoContentException;
 import ru.catstack.teamfinder.model.payload.response.ApiResponse;
+import ru.catstack.teamfinder.model.payload.response.ApplicationResponse;
+import ru.catstack.teamfinder.service.ApplicationService;
 import ru.catstack.teamfinder.service.UserService;
 
 @RestController
-@RequestMapping(value = "/api/users/")
+@RequestMapping(value = "/api/user/")
 public class UserController {
     private final UserService userService;
+    private final ApplicationService applicationService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ApplicationService applicationService) {
         this.userService = userService;
+        this.applicationService = applicationService;
     }
 
     @GetMapping(value = "{id}")
@@ -33,7 +37,14 @@ public class UserController {
         var me = userService.getLoggedInUser();
         var userProfileData = userService.findById(me.getId());
         return new ApiResponse(userProfileData);
+    }
 
+    @GetMapping("myApplications")
+    @PreAuthorize("hasRole('USER_ROLE')")
+    public ApiResponse getUserApplications() {
+        var me = userService.getLoggedInUser();
+        var applications = applicationService.getApplicationsForUser(me.getId());
+        return new ApiResponse(ApplicationResponse.fromApplicationsList(applications));
     }
 }
 
