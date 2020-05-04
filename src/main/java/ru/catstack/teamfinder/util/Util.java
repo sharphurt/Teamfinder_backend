@@ -9,18 +9,22 @@ import ru.catstack.teamfinder.model.Team;
 import ru.catstack.teamfinder.repository.ApplicationRepository;
 import ru.catstack.teamfinder.repository.TeamRepository;
 import ru.catstack.teamfinder.service.ApplicationService;
+import ru.catstack.teamfinder.service.UserService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class Util {
     private static TeamRepository teamRepository;
     private static ApplicationRepository applicationRepository;
+    private static UserService userService;
 
     @Autowired
-    public Util(TeamRepository teamRepository, ApplicationRepository applicationRepository) {
+    public Util(TeamRepository teamRepository, ApplicationRepository applicationRepository, UserService userService) {
         Util.teamRepository = teamRepository;
         Util.applicationRepository = applicationRepository;
+        Util.userService = userService;
     }
 
     public static boolean IsTeamContainsUser(Team team, long userId) {
@@ -42,6 +46,17 @@ public class Util {
 
     public static Optional<Application> findByUserIdAndTeamId(long userId, long teamId) {
         return applicationRepository.findByUserIdAndTeamId(userId, teamId);
+    }
+
+    public static List<Team> fillApplicationStatusField(List<Team> teams) {
+        var me = userService.getLoggedInUser();
+        for (var team : teams) {
+            if (Util.findByUserIdAndTeamId(me.getId(), team.getId()).isPresent())
+                team.setApplicationStatus(Util.findByUserIdAndTeamId(me.getId(), team.getId()).get().getStatus());
+            else
+                team.setApplicationStatus(ApplicationStatus.NO_APPLICATION);
+        }
+        return teams;
     }
 
 }

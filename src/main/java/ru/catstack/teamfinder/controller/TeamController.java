@@ -8,6 +8,7 @@ import ru.catstack.teamfinder.model.payload.request.TeamRegistrationRequest;
 import ru.catstack.teamfinder.model.payload.response.ApiResponse;
 import ru.catstack.teamfinder.service.TeamService;
 import ru.catstack.teamfinder.service.search.TeamsSearchService;
+import ru.catstack.teamfinder.util.Util;
 
 import javax.validation.Valid;
 
@@ -56,6 +57,7 @@ public class TeamController {
 
     @GetMapping("/search")
     public ApiResponse search(@Valid @RequestBody SearchRequest request) {
-        return new ApiResponse(searchService.findTeamsByKeyword(request.getSearchString(), request.getFrom(), request.getCount()));
+        return new ApiResponse(Util.fillApplicationStatusField(
+                searchService.findTeamsByKeyword(request.getSearchString(), request.getFrom(), request.getCount())));
     }
 }
