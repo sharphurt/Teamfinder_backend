@@ -2,11 +2,9 @@ package ru.catstack.teamfinder.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.catstack.teamfinder.exception.AccessDeniedException;
-import ru.catstack.teamfinder.exception.ApplicationAlreadySentException;
-import ru.catstack.teamfinder.exception.ResourceNotFoundException;
-import ru.catstack.teamfinder.exception.UserAlreadyInTeamException;
+import ru.catstack.teamfinder.exception.*;
 import ru.catstack.teamfinder.model.Application;
+import ru.catstack.teamfinder.model.ApplicationStatus;
 import ru.catstack.teamfinder.model.Team;
 import ru.catstack.teamfinder.model.User;
 import ru.catstack.teamfinder.repository.ApplicationRepository;
@@ -33,6 +31,11 @@ public class ApplicationService {
     public Optional<Application> createApplication(long teamId) {
         var me = userService.getLoggedInUser();
         return teamService.getByTeamId(teamId).map(team -> {
+            var app = applicationRepository.findByUserIdAndTeamId(me.getId(), team.getId());
+            if (app.isPresent() && app.get().getStatus() == ApplicationStatus.DECLINED) {
+                applicationRepository.updateStatusById(app.get().getId(), ApplicationStatus.SENT);
+                return app;
+            }
             var application = new Application(me, team);
             if (team.getCreator().getUser().getId().equals(me.getId()))
                 throw new UserAlreadyInTeamException("You are the creator of the team. You are already in this team");
@@ -56,9 +59,9 @@ public class ApplicationService {
     public void deleteApplication(long teamId) {
         var me = userService.getLoggedInUser();
         if (applicationExistsByUserIdAndTeamId(me.getId(), teamId)) {
-            applicationRepository.deleteByUserIdAndTeamId(me.getId(), teamId);
+            applicationRepository.updateStatusById(me.getId(), ApplicationStatus.DECLINED);
         } else
-        throw new ResourceNotFoundException("Application", "team id", teamId);
+            throw new ResourceNotFoundException("Application", "team id", teamId);
     }
 
     public List<Application> getApplicationsForTeam(long teamId) {
@@ -81,7 +84,9 @@ public class ApplicationService {
                 throw new AccessDeniedException("You do not have permission to clear the list of applications for this team.");
             if (applicationRepository.countAllByTeamId(teamId) == 0)
                 throw new ResourceNotFoundException("No team applications found");
-            applicationRepository.deleteAllByTeamId(teamId);
+            var applications = applicationRepository.findAllByTeamId(teamId);
+            for (var app : applications)
+                applicationRepository.updateStatusById(app.getId(), ApplicationStatus.DECLINED);
         }, () -> {
             throw new ResourceNotFoundException("Team", "team id", teamId);
         });
@@ -89,13 +94,15 @@ public class ApplicationService {
 
     public void acceptApplication(long applicationId) {
         applicationRepository.findById(applicationId).ifPresentOrElse(application -> {
+            if (application.getStatus() == ApplicationStatus.DECLINED)
+                throw new InvalidOperationException("You cannot accept a rejected application");
             var me = userService.getLoggedInUser();
             var team = application.getTeam();
             if (!isUserCreatedTeam(me, team))
                 throw new AccessDeniedException("You do not have permission to accept applications for this team.");
             var member = memberService.createMember(application.getUser(), Set.of());
             teamService.addMember(member, team);
-            applicationRepository.deleteByUserIdAndTeamId(member.getUser().getId(), team.getId());
+            applicationRepository.updateStatusById(application.getId(), ApplicationStatus.ACCEPTED);
         }, () -> {
             throw new ResourceNotFoundException("Application", "application id", applicationId);
         });
@@ -107,7 +114,7 @@ public class ApplicationService {
             var team = application.getTeam();
             if (!isUserCreatedTeam(me, team))
                 throw new AccessDeniedException("You do not have permission to decline applications for this team.");
-            applicationRepository.deleteByUserIdAndTeamId(application.getUser().getId(), application.getTeam().getId());
+            applicationRepository.updateStatusById(application.getId(), ApplicationStatus.DECLINED);
         }, () -> {
             throw new ResourceNotFoundException("Application", "application id", applicationId);
         });
@@ -122,6 +129,7 @@ public class ApplicationService {
     }
 
     private boolean applicationExistsByUserIdAndTeamId(long userId, long teamId) {
-        return applicationRepository.existsByUserIdAndTeamId(userId, teamId);
+        var app = applicationRepository.findByUserIdAndTeamId(userId, teamId);
+        return app.isPresent() && app.get().getStatus() != ApplicationStatus.DECLINED;
     }
 }
