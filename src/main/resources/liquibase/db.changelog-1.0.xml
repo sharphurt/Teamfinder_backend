@@ -239,9 +239,15 @@
                 <constraints nullable="false" unique="false"/>
             </column>
 
+
             <column name="team_id" type="BIGINT">
                 <constraints nullable="false" unique="false"/>
             </column>
+
+            <column name="status" type="VARCHAR(10)">
+            <constraints nullable="false" unique="false"/>
+        </column>
+
         </createTable>
     </changeSet>
 

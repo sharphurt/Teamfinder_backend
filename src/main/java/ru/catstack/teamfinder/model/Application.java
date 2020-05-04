@@ -21,9 +21,14 @@ public class Application {
     @JoinColumn(name = "team_id", referencedColumnName = "team_id")
     private Team team;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private ApplicationStatus status;
+
     public Application(User user, Team team) {
         this.team = team;
         this.user = user;
+        this.status = ApplicationStatus.SENT;
     }
 
     public Application() {
@@ -40,5 +45,9 @@ public class Application {
 
     public Team getTeam() {
         return team;
+    }
+
+    public ApplicationStatus getStatus() {
+        return status;
     }
 }
