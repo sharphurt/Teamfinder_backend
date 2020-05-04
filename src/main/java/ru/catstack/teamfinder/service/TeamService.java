@@ -144,7 +144,7 @@ public class TeamService {
         return teamRepository.count();
     }
 
-    public Optional<Team> getByTeamId(long teamId) {
+    Optional<Team> getByTeamId(long teamId) {
         return teamRepository.findById(teamId);
     }
 
@@ -155,7 +155,15 @@ public class TeamService {
     private Sort sort = new Sort(Sort.Direction.DESC, "createdAt");
 
     public List<Team> getTeamsGap(int from, int count) {
-        return teamRepository.findAll(new OffsetBasedPage(from, count, sort)).getContent();
+        var teams = teamRepository.findAll(new OffsetBasedPage(from, count, sort)).getContent();
+        var me = userService.getLoggedInUser();
+        for (var team : teams) {
+            if (Util.findByUserIdAndTeamId(me.getId(), team.getId()).isPresent())
+                team.setApplicationStatus(Util.findByUserIdAndTeamId(me.getId(), team.getId()).get().getStatus());
+            else
+                team.setApplicationStatus(ApplicationStatus.NO_APPLICATION);
+        }
+        return teams;
     }
 
 }

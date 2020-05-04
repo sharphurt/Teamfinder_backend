@@ -1,6 +1,7 @@
 package ru.catstack.teamfinder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
@@ -57,6 +58,9 @@ public class Team extends DateAudit {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private Set<Tag> tags;
 
+    @Transient
+    private ApplicationStatus applicationStatus = ApplicationStatus.NO_APPLICATION;
+
     @OneToOne
     @JsonIgnore
     @JoinColumn(name = "creator_member_id", referencedColumnName = "member_id")
@@ -99,28 +103,8 @@ public class Team extends DateAudit {
         return status;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setPic(String pic) {
-        this.pic = pic;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public void setMembers(List<Member> members) {
-        this.members = members;
+    public void setApplicationStatus(ApplicationStatus applicationStatus) {
+        this.applicationStatus = applicationStatus;
     }
 
     public Member getCreator() {
@@ -159,5 +143,9 @@ public class Team extends DateAudit {
 
     public String getTagsList() {
         return tagsList;
+    }
+
+    public ApplicationStatus getApplicationStatus() {
+        return applicationStatus;
     }
 }
