@@ -40,7 +40,7 @@
             </column>
 
             <column name="about_me" type="VARCHAR(500)">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
 
             <column name="avatar" type="VARCHAR(3000)">
