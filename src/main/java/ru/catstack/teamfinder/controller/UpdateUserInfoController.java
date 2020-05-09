@@ -9,7 +9,7 @@ import ru.catstack.teamfinder.service.UserService;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/api/users/update/")
+@RequestMapping(value = "/api/user/update/")
 public class UpdateUserInfoController {
     private final UserService userService;
 
