@@ -28,7 +28,7 @@ public class Tag implements Serializable {
     private Set<Team> teams;
 
     public Tag(String name) {
-        this.tag = name;
+        this.tag = name.trim().replaceAll("\\s{2,}", " ");
         if (!name.matches("[a-zA-Zа-яА-Я\\s]{1,30}"))
             throw new BadRequestException("Incorrect tag name");
     }
