@@ -3,6 +3,7 @@ package ru.catstack.teamfinder.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.catstack.teamfinder.model.Team;
 import ru.catstack.teamfinder.model.payload.request.SearchRequest;
 import ru.catstack.teamfinder.model.payload.request.TeamRegistrationRequest;
 import ru.catstack.teamfinder.model.payload.response.ApiResponse;
@@ -34,7 +35,7 @@ public class TeamController {
     @GetMapping("/get")
     public ApiResponse getTeams(@RequestParam int from, @RequestParam int count) {
         var teams = teamService.getTeamsGap(from, count);
-        return new ApiResponse(teams.toArray());
+        return new ApiResponse(Team.toTeamCardList(teams).toArray());
     }
 
     @GetMapping("/delete")

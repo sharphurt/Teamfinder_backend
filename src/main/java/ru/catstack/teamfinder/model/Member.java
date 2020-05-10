@@ -10,7 +10,6 @@ import java.util.Set;
 @Entity
 @Table(name = "members")
 public class Member extends DateAudit {
-
     @Id
     @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

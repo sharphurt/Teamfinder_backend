@@ -1,6 +1,8 @@
 package ru.catstack.teamfinder.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.search.annotations.Analyze;
@@ -36,6 +38,9 @@ public class Team extends DateAudit {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Transient
+    private int membersCount;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "teams_members",
             joinColumns = {@JoinColumn(name = "team_id", referencedColumnName = "team_id")},
@@ -70,7 +75,7 @@ public class Team extends DateAudit {
         this.creator = creator;
         this.pic = picCode;
         this.status = Status.ACTIVE;
-        for (var tag: tags)
+        for (var tag : tags)
             addTag(tag);
     }
 
@@ -100,6 +105,10 @@ public class Team extends DateAudit {
 
     public Status getStatus() {
         return status;
+    }
+
+    public int getMembersCount() {
+        return members.size();
     }
 
     public void setApplicationStatus(ApplicationStatus applicationStatus) {
@@ -146,5 +155,12 @@ public class Team extends DateAudit {
 
     public ApplicationStatus getApplicationStatus() {
         return applicationStatus;
+    }
+
+    public static List<TeamCard> toTeamCardList(List<Team> teams){
+        var teamCards = new ArrayList<TeamCard>();
+        for (var team: teams)
+            teamCards.add(TeamCard.fromTeam(team));
+        return teamCards;
     }
 }
