@@ -1,8 +1,13 @@
 package ru.catstack.teamfinder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import ru.catstack.teamfinder.exception.BadRequestException;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -24,6 +29,8 @@ public class Tag implements Serializable {
 
     public Tag(String name) {
         this.tag = name;
+        if (!name.matches("[a-zA-Zа-яА-Я\\s]{1,30}"))
+            throw new BadRequestException("Incorrect tag name");
     }
 
     public Tag() {    }

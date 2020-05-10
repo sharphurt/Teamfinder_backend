@@ -171,4 +171,5 @@ public class AuthControllerAdvice extends ResponseEntityExceptionHandler {
         var response = new ApiErrorResponse(ex.getMessage(), 417, ex.getClass().getName(), pathFromRequest(request));
         return new ApiResponse(response);
     }
+
 }

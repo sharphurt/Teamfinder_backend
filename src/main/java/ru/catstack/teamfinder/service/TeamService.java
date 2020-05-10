@@ -49,7 +49,7 @@ public class TeamService {
 
     private void createTeam(User creator, TeamRegistrationRequest request) {
         var creatorMember = memberService.createMember(creator, Set.of(new Role("CREATOR")));
-        var team = new Team(request.getName(), request.getDescription(), creatorMember, request.getPicCode());
+        var team = new Team(request.getName(), request.getDescription(), creatorMember, request.getPicCode(), request.getTags());
         team.addMember(creatorMember);
         var saved = save(team);
         messageService.sendCreateMessage(saved, creatorMember);

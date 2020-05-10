@@ -11,10 +11,7 @@ import org.hibernate.search.annotations.Store;
 import ru.catstack.teamfinder.model.audit.DateAudit;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "teams")
@@ -56,7 +53,7 @@ public class Team extends DateAudit {
             joinColumns = {@JoinColumn(name = "team_id", referencedColumnName = "team_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     @Transient
     private ApplicationStatus applicationStatus = ApplicationStatus.NO_APPLICATION;
@@ -66,13 +63,15 @@ public class Team extends DateAudit {
     @JoinColumn(name = "creator_member_id", referencedColumnName = "member_id")
     private Member creator;
 
-    public Team(String name, String description, Member creator, String picCode) {
+    public Team(String name, String description, Member creator, String picCode, List<String> tags) {
         this.name = name;
         this.description = description;
         this.members = new ArrayList<>();
         this.creator = creator;
         this.pic = picCode;
         this.status = Status.ACTIVE;
+        for (var tag: tags)
+            addTag(tag);
     }
 
     public Team() {
@@ -133,7 +132,7 @@ public class Team extends DateAudit {
         var result = new String[this.tags.size()];
         var tagsArr = new ArrayList<>(this.tags);
         for (var i = 0; i < this.tags.size(); i++)
-            result[i] = tagsArr.get(i).getTag();
+            result[i] = tagsArr.get(i).getTag().toLowerCase().replaceAll("\\W|_", " ");
         return Arrays.toString(result);
     }
 
