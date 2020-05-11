@@ -10,6 +10,7 @@ import ru.catstack.teamfinder.service.MemberService;
 import ru.catstack.teamfinder.service.TeamService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping(value = "/api/teams/tags/")
@@ -22,13 +23,13 @@ public class TagController {
     }
 
     @PostMapping("/add")
-    public ApiResponse addTag(@Valid @RequestBody AddTagRequest request) {
-        teamService.addTag(request.getTeamId(), request.getTag());
+    public ApiResponse addTag(@RequestParam long teamId, @RequestParam @NotBlank(message = "New tag cannot be blank") String tag) {
+        teamService.addTag(teamId, tag);
         return new ApiResponse("Tag added successfully");
     }
 
-    @GetMapping("/delete")
-    public ApiResponse delete(long tagId) {
+    @DeleteMapping("/delete")
+    public ApiResponse delete(@RequestParam long tagId) {
         teamService.deleteTag(tagId);
         return new ApiResponse("Tag deleted successfully");
     }
