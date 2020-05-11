@@ -27,8 +27,7 @@ public class UserController {
         var user = userService.findById(id);
         if (user.isEmpty())
             throw new NoContentException("User", "id", id);
-        UserDto result = UserDto.fromUser(user.get());
-        return new ApiResponse(result);
+        return new ApiResponse(user.get());
     }
 
     @GetMapping("profile")
