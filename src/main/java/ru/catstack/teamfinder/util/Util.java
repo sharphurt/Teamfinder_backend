@@ -51,7 +51,9 @@ public class Util {
     public static List<Team> fillApplicationStatusField(List<Team> teams) {
         var me = userService.getLoggedInUser();
         for (var team : teams) {
-            if (Util.findByUserIdAndTeamId(me.getId(), team.getId()).isPresent())
+            if (team.getCreator().getUser().getId().equals(me.getId()))
+                team.setApplicationStatus(ApplicationStatus.TEAM_CREATOR);
+            else if (Util.findByUserIdAndTeamId(me.getId(), team.getId()).isPresent())
                 team.setApplicationStatus(Util.findByUserIdAndTeamId(me.getId(), team.getId()).get().getStatus());
             else
                 team.setApplicationStatus(ApplicationStatus.NO_APPLICATION);
