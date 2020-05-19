@@ -41,7 +41,7 @@ public class Team extends DateAudit {
     @Transient
     private int membersCount;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "teams_members",
             joinColumns = {@JoinColumn(name = "team_id", referencedColumnName = "team_id")},
             inverseJoinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")})

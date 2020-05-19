@@ -3,7 +3,6 @@ package ru.catstack.teamfinder.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.catstack.teamfinder.exception.NoContentException;
 import ru.catstack.teamfinder.model.Team;
 import ru.catstack.teamfinder.model.payload.request.SearchRequest;
 import ru.catstack.teamfinder.model.payload.request.TeamRegistrationRequest;
@@ -47,7 +46,8 @@ public class TeamController {
 
     @GetMapping(value = "{id}")
     public ApiResponse getTeamById(@PathVariable(name = "id") long id) {
-        return new ApiResponse(Util.getTeamOrThrow(id));
+        return new ApiResponse(teamService.getByTeamId(id));
+        //return new ApiResponse(Util.getTeamOrThrow(id));
     }
 
 

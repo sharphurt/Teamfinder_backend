@@ -144,7 +144,7 @@ public class TeamService {
         return teamRepository.count();
     }
 
-    Optional<Team> getByTeamId(long teamId) {
+    public Optional<Team> getByTeamId(long teamId) {
         return teamRepository.findById(teamId);
     }
 
