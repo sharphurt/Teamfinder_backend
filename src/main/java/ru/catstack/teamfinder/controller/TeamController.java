@@ -46,8 +46,7 @@ public class TeamController {
 
     @GetMapping(value = "{id}")
     public ApiResponse getTeamById(@PathVariable(name = "id") long id) {
-        return new ApiResponse(teamService.getByTeamId(id));
-        //return new ApiResponse(Util.getTeamOrThrow(id));
+        return new ApiResponse(Util.getTeamOrThrow(id));
     }
 
 
