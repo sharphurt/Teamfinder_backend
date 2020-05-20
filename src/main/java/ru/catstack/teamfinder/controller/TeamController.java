@@ -38,13 +38,13 @@ public class TeamController {
         return new ApiResponse(Team.toTeamCardList(teams).toArray());
     }
 
-    @GetMapping("/delete")
+    @DeleteMapping("/delete")
     public ApiResponse deleteTeam(@RequestParam long teamId) {
         teamService.deleteTeam(teamId);
         return new ApiResponse("Team deleted successfully");
     }
 
-    @GetMapping(value = "{id}")
+    @GetMapping("{id}")
     public ApiResponse getTeamById(@PathVariable(name = "id") long id) {
         return new ApiResponse(Util.getTeamOrThrow(id));
     }
