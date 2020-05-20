@@ -56,7 +56,14 @@ public class TeamService {
     }
 
     public void deleteTeam(long teamId) {
-        teamRepository.deleteById(teamId);
+        var me = userService.getLoggedInUser();
+        teamRepository.findById(teamId).ifPresentOrElse(team -> {
+            if (!team.getCreator().getUser().getId().equals(me.getId()))
+                throw new AccessDeniedException("You do not have permission to delete this team");
+            teamRepository.deleteById(team.getId());
+        }, () -> {
+            throw new ResourceNotFoundException("Team", "team id", teamId);
+        });
     }
 
     public void addMember(long userId, long teamId) {
@@ -110,7 +117,7 @@ public class TeamService {
             team.getTags().remove(tag);
             teamRepository.save(team);
         }, () -> {
-            throw new ResourceNotFoundException("Tag", "role id", tagId);
+            throw new ResourceNotFoundException("Tag", "tag id", tagId);
         });
     }
 
