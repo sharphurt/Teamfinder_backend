@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.catstack.teamfinder.exception.ResourceAlreadyInUseException;
 import ru.catstack.teamfinder.exception.ResourceNotFoundException;
+import ru.catstack.teamfinder.model.RoleEnum;
 import ru.catstack.teamfinder.model.Status;
 import ru.catstack.teamfinder.model.User;
 import ru.catstack.teamfinder.model.payload.request.RegistrationRequest;
@@ -26,16 +27,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final SessionService sessionService;
-    private final RefreshTokenService refreshTokenService;
 
     @Autowired
-    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, JwtTokenProvider jwtTokenProvider, SessionService sessionService, RefreshTokenService refreshTokenService) {
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.jwtTokenProvider = jwtTokenProvider;
-        this.sessionService = sessionService;
-        this.refreshTokenService = refreshTokenService;
     }
 
     public Optional<User> findByUsername(String username) {
@@ -77,7 +74,7 @@ public class UserService {
     User createUser(RegistrationRequest registerRequest) {
         return new User(registerRequest.getEmail(), passwordEncoder.encode(registerRequest.getPassword()),
                 registerRequest.getUsername(), registerRequest.getFirstName(), registerRequest.getLastName(),
-                registerRequest.getAge(), "ROLE_USER", Status.ACTIVE);
+                registerRequest.getAge(), RoleEnum.ROLE_USER, Status.ACTIVE);
     }
 
     public Long getUserIdFromRequest(HttpServletRequest request) {

@@ -18,20 +18,17 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 
+import static ru.catstack.teamfinder.config.SecurityConfig.*;
+
 @Component
 public class JwtTokenProvider {
+    public static String secret = JWT_SECRET_WORD;
 
-    @Value("${app.jwt.secret}")
-    private String secret;
+    public static long validityInMilliseconds = JWT_EXPIRATION;
 
-    @Value("${app.jwt.expiration}")
-    private long validityInMilliseconds;
+    public static String tokenPrefix = JWT_PREFIX;
 
-    @Value("${app.jwt.header.prefix}")
-    private String tokenPrefix;
-
-    @Value("${app.jwt.header}")
-    private String tokenHeader;
+    public static String tokenHeader = JWT_HEADER;
 
     private final JwtUserDetailsService userDetailsService;
 
@@ -53,7 +50,7 @@ public class JwtTokenProvider {
         Instant expiryDate = Instant.now().plusMillis(validityInMilliseconds);
         return Jwts.builder()
                 .setId(Long.toString(user.getId()))
-                .setSubject(user.getRoles())
+                .setSubject(user.getRoles().toString())
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
                 .signWith(SignatureAlgorithm.HS512, secret)

@@ -31,7 +31,6 @@ public class UserController {
     }
 
     @GetMapping("profile")
-    @PreAuthorize("hasRole('USER_ROLE')")
     public ApiResponse getUserProfile() {
         var me = userService.getLoggedInUser();
         var userProfileData = userService.findById(me.getId());
@@ -39,7 +38,6 @@ public class UserController {
     }
 
     @GetMapping("myApplications")
-    @PreAuthorize("hasRole('USER_ROLE')")
     public ApiResponse getUserApplications() {
         var me = userService.getLoggedInUser();
         var applications = applicationService.getApplicationsForUser(me.getId());

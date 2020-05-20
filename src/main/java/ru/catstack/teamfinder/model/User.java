@@ -2,6 +2,7 @@ package ru.catstack.teamfinder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.context.annotation.Role;
 import ru.catstack.teamfinder.model.audit.DateAudit;
 
 import javax.persistence.*;
@@ -41,7 +42,8 @@ public class User extends DateAudit {
     private String avatar;
 
     @Column(name = "role")
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private RoleEnum role = RoleEnum.ROLE_USER;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -51,7 +53,7 @@ public class User extends DateAudit {
     }
 
     public User(String email, String password, String username, String firstName,
-                String lastName, Byte age, String role, Status status) {
+                String lastName, Byte age, RoleEnum role, Status status) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -89,7 +91,7 @@ public class User extends DateAudit {
         return password;
     }
 
-    public String getRoles() {
+    public RoleEnum getRoles() {
         return role;
     }
 

@@ -29,6 +29,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String CHECK_EMAIL_IN_USE = "/api/auth/checkEmailInUse";
     private static final String CHECK_USERNAME_IN_USE = "/api/auth/checkUsernameInUse";
 
+    public static long JWT_EXPIRATION = 900000;
+    public static String JWT_SECRET_WORD = "mySecret";
+    public static String JWT_PREFIX = "Bearer";
+    public static String JWT_HEADER = "Authorization";
+
 
     @Autowired
     public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
@@ -51,7 +56,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(LOGIN_ENDPOINT).permitAll()
                 .antMatchers(REGISTER_ENDPOINT).permitAll()
-                .antMatchers(ADMIN_ENDPOINT).hasRole("ADMIN")
                 .antMatchers(REFRESH_ENDPOINT).permitAll()
                 .antMatchers(CHECK_EMAIL_IN_USE).permitAll()
                 .antMatchers(CHECK_USERNAME_IN_USE).permitAll()
