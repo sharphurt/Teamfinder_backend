@@ -67,18 +67,15 @@ public class TeamController {
 
     @GetMapping("/search")
     public ApiResponse search(@Valid @RequestBody SearchRequest request) {
-        return new ApiResponse(Util.fillApplicationStatusField(
-                searchService.findTeams(
-                        request.getSearchString(),
-                        new String[]{"name", "tagsList"},
-                        request.getFrom(),
-                        request.getCount())));
+        return new ApiResponse(Team.toTeamCardList(Util.fillApplicationStatusField(
+                searchService.findTeams(request.getSearchString(), new String[]{"name", "tagsList"},
+                        request.getFrom(), request.getCount()))));
     }
 
     @GetMapping("/my")
     public ApiResponse getMy(@RequestParam int from, @RequestParam int count) {
         var me = userService.getLoggedInUser();
-        return new ApiResponse(Util.fillApplicationStatusField(
-                searchService.findTeams(me.getId().toString(), new String[]{"usersList"}, from, count)));
+        return new ApiResponse(Team.toTeamCardList(Util.fillApplicationStatusField(
+                searchService.findTeams(me.getId().toString(), new String[]{"usersList"}, from, count))));
     }
 }
