@@ -8,6 +8,7 @@ import ru.catstack.teamfinder.model.payload.request.SearchRequest;
 import ru.catstack.teamfinder.model.payload.request.TeamRegistrationRequest;
 import ru.catstack.teamfinder.model.payload.response.ApiResponse;
 import ru.catstack.teamfinder.service.TeamService;
+import ru.catstack.teamfinder.service.UserService;
 import ru.catstack.teamfinder.service.search.TeamsSearchService;
 import ru.catstack.teamfinder.util.Util;
 
@@ -19,11 +20,13 @@ public class TeamController {
 
     private final TeamService teamService;
     private final TeamsSearchService searchService;
+    private final UserService userService;
 
     @Autowired
-    public TeamController(TeamService teamService, TeamsSearchService searchService) {
+    public TeamController(TeamService teamService, TeamsSearchService searchService, UserService userService) {
         this.teamService = teamService;
         this.searchService = searchService;
+        this.userService = userService;
     }
 
     @PostMapping("/register")
@@ -65,6 +68,17 @@ public class TeamController {
     @GetMapping("/search")
     public ApiResponse search(@Valid @RequestBody SearchRequest request) {
         return new ApiResponse(Util.fillApplicationStatusField(
-                searchService.findTeamsByKeyword(request.getSearchString(), request.getFrom(), request.getCount())));
+                searchService.findTeams(
+                        request.getSearchString(),
+                        new String[]{"name", "tagsList"},
+                        request.getFrom(),
+                        request.getCount())));
+    }
+
+    @GetMapping("/my")
+    public ApiResponse getMy(@RequestParam int from, @RequestParam int count) {
+        var me = userService.getLoggedInUser();
+        return new ApiResponse(Util.fillApplicationStatusField(
+                searchService.findTeams(me.getId().toString(), new String[]{"usersList"}, from, count)));
     }
 }

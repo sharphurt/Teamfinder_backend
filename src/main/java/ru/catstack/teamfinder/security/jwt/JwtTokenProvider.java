@@ -2,7 +2,6 @@ package ru.catstack.teamfinder.security.jwt;
 
 import io.jsonwebtoken.*;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

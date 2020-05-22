@@ -23,11 +23,12 @@ public class TeamsSearchService {
     }
 
     @PostConstruct
-    public void initHibernateSearch() throws Exception{
+    public void initHibernateSearch() throws Exception {
         hibernateSearchService.initializeHibernateSearch();
     }
+
     @Transactional
-    public List<Team> findTeamsByKeyword(String keyword, int from, int count){
+    public List<Team> findTeams(String keyword, String[] fields, int from, int count) {
         var fullTextEntityManager = Search.getFullTextEntityManager(hibernateSearchService.getEntityManager());
         fullTextEntityManager.flushToIndexes();
         var queryBuilder = fullTextEntityManager
@@ -40,7 +41,7 @@ public class TeamsSearchService {
                 .fuzzy()
                 .withEditDistanceUpTo(1)
                 .withPrefixLength(1)
-                .onFields("name", "tagsList")
+                .onFields(fields)
                 .matching(keyword)
                 .createQuery();
         var jpaQuery = fullTextEntityManager.createFullTextQuery(luceneQuery, Team.class)

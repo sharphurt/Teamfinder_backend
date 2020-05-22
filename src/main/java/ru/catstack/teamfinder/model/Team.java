@@ -1,9 +1,6 @@
 package ru.catstack.teamfinder.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
@@ -47,6 +44,11 @@ public class Team extends DateAudit {
             inverseJoinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Member> members;
+
+    @JsonIgnore
+    @Column(name = "users_list")
+    @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
+    private String usersList = "";
 
     @JsonIgnore
     @Column(name = "tags_list")
@@ -121,6 +123,7 @@ public class Team extends DateAudit {
 
     public void addMember(Member member) {
         this.members.add(member);
+        this.usersList = getUsersAsString();
     }
 
     public void removeMember(Member member) {
@@ -142,6 +145,14 @@ public class Team extends DateAudit {
         var tagsArr = new ArrayList<>(this.tags);
         for (var i = 0; i < this.tags.size(); i++)
             result[i] = tagsArr.get(i).getTag().toLowerCase().replaceAll("\\W|_", " ");
+        return Arrays.toString(result);
+    }
+
+    private String getUsersAsString() {
+        var result = new String[this.members.size()];
+        var members = new ArrayList<>(this.members);
+        for (var i = 0; i < this.members.size(); i++)
+            result[i] = members.get(i).getUser().getId().toString();
         return Arrays.toString(result);
     }
 

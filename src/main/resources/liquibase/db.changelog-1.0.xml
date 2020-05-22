@@ -183,7 +183,11 @@
                 <constraints nullable="false" unique="false"/>
             </column>
 
-            <column name="tags_list" type="VARCHAR(1000)">
+            <column name="tags_list" type="TEXT(10000)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+
+            <column name="users_list" type="TEXT(10000)">
                 <constraints nullable="false" unique="false"/>
             </column>
 
@@ -245,8 +249,8 @@
             </column>
 
             <column name="status" type="VARCHAR(10)">
-            <constraints nullable="false" unique="false"/>
-        </column>
+                <constraints nullable="false" unique="false"/>
+            </column>
 
         </createTable>
     </changeSet>
