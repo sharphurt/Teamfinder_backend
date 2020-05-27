@@ -163,6 +163,6 @@ public class TeamService {
 
     public List<Team> getTeamsGap(int from, int count) {
         var teams = teamRepository.findAll(new OffsetBasedPage(from, count, sort)).getContent();
-        return Util.fillApplicationStatusField(teams);
+        return Util.fillTeamsApplicationStatusField(teams);
     }
 }

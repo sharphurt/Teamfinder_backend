@@ -48,16 +48,20 @@ public class Util {
         return applicationRepository.findByUserIdAndTeamId(userId, teamId);
     }
 
-    public static List<Team> fillApplicationStatusField(List<Team> teams) {
+    public static Team fillTeamApplicationStatusField(Team team) {
         var me = userService.getLoggedInUser();
-        for (var team : teams) {
-            if (team.getCreator().getUser().getId().equals(me.getId()))
-                team.setApplicationStatus(ApplicationStatus.TEAM_CREATOR);
-            else if (Util.findByUserIdAndTeamId(me.getId(), team.getId()).isPresent())
-                team.setApplicationStatus(Util.findByUserIdAndTeamId(me.getId(), team.getId()).get().getStatus());
-            else
-                team.setApplicationStatus(ApplicationStatus.NO_APPLICATION);
-        }
+        if (team.getCreator().getUser().getId().equals(me.getId()))
+            team.setApplicationStatus(ApplicationStatus.TEAM_CREATOR);
+        else if (Util.findByUserIdAndTeamId(me.getId(), team.getId()).isPresent())
+            team.setApplicationStatus(Util.findByUserIdAndTeamId(me.getId(), team.getId()).get().getStatus());
+        else
+            team.setApplicationStatus(ApplicationStatus.NO_APPLICATION);
+        return team;
+    }
+
+    public static List<Team> fillTeamsApplicationStatusField(List<Team> teams) {
+        for (var team : teams)
+            fillTeamApplicationStatusField(team);
         return teams;
     }
 

@@ -49,7 +49,7 @@ public class TeamController {
 
     @GetMapping("{id}")
     public ApiResponse getTeamById(@PathVariable(name = "id") long id) {
-        return new ApiResponse(Util.getTeamOrThrow(id));
+        return new ApiResponse(Util.fillTeamApplicationStatusField(Util.getTeamOrThrow(id)));
     }
 
 
@@ -67,7 +67,7 @@ public class TeamController {
 
     @GetMapping("/search")
     public ApiResponse search(@Valid @RequestBody SearchRequest request) {
-        return new ApiResponse(Team.toTeamCardList(Util.fillApplicationStatusField(
+        return new ApiResponse(Team.toTeamCardList(Util.fillTeamsApplicationStatusField(
                 searchService.findTeams(request.getSearchString(), new String[]{"name", "tagsList"},
                         request.getFrom(), request.getCount()))));
     }
@@ -75,7 +75,7 @@ public class TeamController {
     @GetMapping("/my")
     public ApiResponse getMy(@RequestParam int from, @RequestParam int count) {
         var me = userService.getLoggedInUser();
-        return new ApiResponse(Team.toTeamCardList(Util.fillApplicationStatusField(
+        return new ApiResponse(Team.toTeamCardList(Util.fillTeamsApplicationStatusField(
                 searchService.findTeams(me.getId().toString(), new String[]{"usersList"}, from, count))));
     }
 }
