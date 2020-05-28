@@ -59,7 +59,8 @@ public class ApplicationService {
     public void deleteApplication(long teamId) {
         var me = userService.getLoggedInUser();
         if (applicationExistsByUserIdAndTeamId(me.getId(), teamId)) {
-            applicationRepository.updateStatusById(me.getId(), ApplicationStatus.NO_APPLICATION);
+            var applicationId = applicationIdByUserIdAndTeamId(me.getId(), teamId);
+            applicationRepository.updateStatusById(applicationId, ApplicationStatus.NO_APPLICATION);
         } else
             throw new ResourceNotFoundException("Application", "team id", teamId);
     }
@@ -131,5 +132,10 @@ public class ApplicationService {
     private boolean applicationExistsByUserIdAndTeamId(long userId, long teamId) {
         var app = applicationRepository.findByUserIdAndTeamId(userId, teamId);
         return app.isPresent() && app.get().getStatus() != ApplicationStatus.DECLINED;
+    }
+
+    private long applicationIdByUserIdAndTeamId(long userId, long teamId) {
+        var app = applicationRepository.findByUserIdAndTeamId(userId, teamId);
+        return app.map(Application::getId).orElse(-1L);
     }
 }
