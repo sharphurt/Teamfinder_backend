@@ -59,7 +59,7 @@ public class ApplicationService {
     public void deleteApplication(long teamId) {
         var me = userService.getLoggedInUser();
         if (applicationExistsByUserIdAndTeamId(me.getId(), teamId)) {
-            applicationRepository.updateStatusById(me.getId(), ApplicationStatus.DECLINED);
+            applicationRepository.updateStatusById(me.getId(), ApplicationStatus.NO_APPLICATION);
         } else
             throw new ResourceNotFoundException("Application", "team id", teamId);
     }
