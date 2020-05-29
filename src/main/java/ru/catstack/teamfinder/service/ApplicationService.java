@@ -60,7 +60,7 @@ public class ApplicationService {
         var me = userService.getLoggedInUser();
         if (applicationExistsByUserIdAndTeamId(me.getId(), teamId)) {
             var applicationId = applicationIdByUserIdAndTeamId(me.getId(), teamId);
-            applicationRepository.updateStatusById(applicationId, ApplicationStatus.NO_APPLICATION);
+            applicationRepository.deleteById(applicationId);
         } else
             throw new ResourceNotFoundException("Application", "team id", teamId);
     }
