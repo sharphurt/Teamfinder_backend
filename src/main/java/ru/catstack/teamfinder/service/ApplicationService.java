@@ -70,7 +70,7 @@ public class ApplicationService {
         return teamService.getByTeamId(teamId).map(team -> {
             if (!isUserCreatedTeam(me, team))
                 throw new AccessDeniedException("You do not have permission to view the list of applications for this team.");
-            return applicationRepository.findAllByTeamId(teamId);
+            return applicationRepository.findAllByTeamIdAndStatus(teamId, ApplicationStatus.SENT);
         }).orElseThrow(() -> new ResourceNotFoundException("Team", "team id", teamId));
     }
 
@@ -85,7 +85,7 @@ public class ApplicationService {
                 throw new AccessDeniedException("You do not have permission to clear the list of applications for this team.");
             if (applicationRepository.countAllByTeamId(teamId) == 0)
                 throw new ResourceNotFoundException("No team applications found");
-            var applications = applicationRepository.findAllByTeamId(teamId);
+            var applications = applicationRepository.findAllByTeamIdAndStatus(teamId, ApplicationStatus.SENT);
             for (var app : applications)
                 applicationRepository.updateStatusById(app.getId(), ApplicationStatus.DECLINED);
         }, () -> {

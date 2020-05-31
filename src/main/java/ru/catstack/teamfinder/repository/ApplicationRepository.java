@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
-    List<Application> findAllByTeamId(long teamId);
+    List<Application> findAllByTeamIdAndStatus(long teamId, ApplicationStatus status);
 
     boolean existsByUserIdAndTeamId(long userId, long teamId);
 
